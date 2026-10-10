@@ -1,1 +1,809 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medini — နိုင်ငံ & ကမ္ဘာ နက္ခတ်</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Padauk', 'Noto Sans Myanmar', sans-serif; background: #f4f1ea; color: #1e293b; line-height: 1.75; }
+  header { background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 14px 16px; }
+  header h1 { font-size: 19px; }
+  header p { font-size: 11px; opacity: .8; }
+  .bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; position: sticky; top: 0; z-index: 5; }
+  select, input { font-family: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px 0; max-width: 960px; margin: 0 auto; }
+  .tab { padding: 7px 12px; border-radius: 999px; border: 1px solid #c7d2fe; background: #eef2ff; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+  .tab.on { background: #4338ca; color: #fff; border-color: #4338ca; font-weight: 700; }
+  main { max-width: 960px; margin: 0 auto; padding: 12px 16px 40px; }
+  .card { background: #fff; border: 1px solid #e7e5df; border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(30,27,75,.06); }
+  .card h2 { font-size: 14.5px; color: #1e1b4b; margin-bottom: 6px; }
+  .card h3 { font-size: 12.5px; color: #3730a3; margin: 10px 0 4px; }
+  .small { font-size: 11px; color: #64748b; }
+  .line { font-size: 12.5px; color: #334155; margin: 3px 0; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+  .g-good { background: #dcfce7; color: #15803d; } .g-mid { background: #fef3c7; color: #b45309; } .g-bad { background: #ffe4e6; color: #be123c; }
+  .g-info { background: #e0e7ff; color: #4338ca; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { padding: 4px 6px; border-bottom: 1px solid #f1f0ea; text-align: left; }
+  th { color: #64748b; font-size: 11px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .dom { border: 1px solid #eef2f7; border-radius: 10px; padding: 8px 10px; }
+  .dom b { font-size: 12px; }
+  .bar-wrap { background: #f1f5f9; border-radius: 999px; height: 6px; margin-top: 4px; }
+  .bar-fill { height: 6px; border-radius: 999px; background: #6366f1; }
+  .warn { background: #fff7ed; border-color: #fed7aa; }
+  .foot { font-size: 10.5px; color: #94a3b8; text-align: center; padding: 0 16px 30px; }
+  details summary { cursor: pointer; font-size: 12.5px; color: #4338ca; font-weight: 700; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; margin-top: 8px; }
+  button.act { background: #4338ca; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-family: inherit; font-size: 12.5px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏛️ Medini — နိုင်ငံ &amp; ကမ္ဘာ နက္ခတ်</h1>
+  <p>နိုင်ငံ့ မွေးဇာတာ · လက်ရှိ ကောဇာ · တစ်နှစ် အဟော · ဦးစားပေး ရွေးချယ်မှု · နိုင်ငံ အချင်းချင်း ပေါင်းသင်း (Mundane Astrology)</p>
+</header>
+<div class="bar">
+  <label class="small">နိုင်ငံ:</label>
+  <select id="countrySel"></select>
+  <span id="foundInfo" class="small"></span>
+  <label class="small">Ayanamsa:</label>
+  <select id="ayanSel"><option value="lahiri">Lahiri</option><option value="kp">KP</option><option value="raman">Raman</option></select>
+</div>
+<nav class="tabs" id="tabNav">
+  <button class="tab on" data-tab="profile">🏛️ နိုင်ငံ ပရိုဖိုင်</button>
+  <button class="tab" data-tab="transit">🌐 လက်ရှိ ကောဇာ</button>
+  <button class="tab" data-tab="annual">📅 တစ်နှစ် အဟော</button>
+  <button class="tab" data-tab="priority">🧭 ဦးစားပေး</button>
+  <button class="tab" data-tab="relate">🤝 နိုင်ငံ ပေါင်းသင်း</button>
+</nav>
+<main>
+  <section id="tab-profile"></section>
+  <section id="tab-transit" style="display:none"></section>
+  <section id="tab-annual" style="display:none"></section>
+  <section id="tab-priority" style="display:none"></section>
+  <section id="tab-relate" style="display:none"></section>
+  <div class="card">
+    <details>
+      <summary>➕ နိုင်ငံ အသစ် ထည့်ရန် (မွေးချိန် ကိုယ်တိုင် သတ်မှတ်)</summary>
+      <div class="form-grid">
+        <input id="ncName" placeholder="အမည် (ဥပမာ Laos)">
+        <input id="ncDate" type="date">
+        <input id="ncTime" type="time" value="12:00">
+        <input id="ncCity" placeholder="မြို့">
+        <input id="ncLat" type="number" step="0.01" placeholder="Lat">
+        <input id="ncLon" type="number" step="0.01" placeholder="Lon">
+        <input id="ncTz" type="number" step="0.25" placeholder="TZ (ဥပမာ 6.5)">
+        <input id="ncBasis" placeholder="အခြေခံ အခိုက် မှတ်ချက်">
+      </div>
+      <p style="margin-top:8px"><button class="act" id="ncAdd">ထည့်မယ်</button> <span class="small">ထည့်ထားတဲ့ နိုင်ငံ က ဒီ browser ထဲမှာ သိမ်းထားမယ်။</span></p>
+    </details>
+  </div>
+</main>
+<p class="foot">မွေးချိန် အခြေခံ များ ကို ပွင့်လင်းစွာ ပြထားပြီး ပြင်လို့ ရသည် — နိုင်ငံ မွေးချိန် သည် အငြင်းပွား ရသည့် အချက် ဖြစ်နိုင်သည်။ အဟော များသည် အကြမ်းဖျင်း ဖတ်နည်း သာ ဖြစ်သည်။</p>
+<script>
+const NATURAL_RELATIONS = {
+      Sun: { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn'], neutral: ['Mercury'] },
+      Moon: { friends: ['Sun', 'Mercury'], enemies: [], neutral: ['Mars', 'Jupiter', 'Venus', 'Saturn'] },
+      Mars: { friends: ['Sun', 'Moon', 'Jupiter'], enemies: ['Mercury'], neutral: ['Venus', 'Saturn'] },
+      Mercury: { friends: ['Sun', 'Venus'], enemies: ['Moon'], neutral: ['Mars', 'Jupiter', 'Saturn'] },
+      Jupiter: { friends: ['Sun', 'Moon', 'Mars'], enemies: ['Mercury', 'Venus'], neutral: ['Saturn'] },
+      Venus: { friends: ['Mercury', 'Saturn'], enemies: ['Sun', 'Moon'], neutral: ['Mars', 'Jupiter'] },
+      Saturn: { friends: ['Mercury', 'Venus'], enemies: ['Sun', 'Moon', 'Mars'], neutral: ['Jupiter'] },
+      Rahu: { friends: ['Mercury', 'Venus', 'Saturn'], enemies: ['Sun', 'Moon', 'Mars'], neutral: ['Jupiter'] },
+      Ketu: { friends: ['Mars', 'Jupiter'], enemies: ['Sun', 'Moon'], neutral: ['Mercury', 'Venus', 'Saturn'] }
+    };
 
+const RASI_LORDS = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'];
+
+const DASHA_LORDS = [{ name: 'Ketu', years: 7 }, { name: 'Venus', years: 20 }, { name: 'Sun', years: 6 }, { name: 'Moon', years: 10 }, { name: 'Mars', years: 7 }, { name: 'Rahu', years: 18 }, { name: 'Jupiter', years: 16 }, { name: 'Saturn', years: 19 }, { name: 'Mercury', years: 17 }];
+
+function norm360(deg) {
+      if (typeof deg !== 'number' || isNaN(deg)) return 0;
+      let d = deg % 360;
+      if (d < 0) d += 360;
+      return d;
+    }
+
+function getPlanetaryDignity(planet, signIdx) {
+      if (['Lagna', 'Uranus', 'Neptune', 'Pluto'].indexOf(planet) !== -1 || signIdx < 0 || signIdx > 11) {
+        return { label: '-', color: 'text-slate-500' };
+      }
+
+      const exaltDebil = {
+        Sun: { ex: 0, deb: 6 }, Moon: { ex: 1, deb: 7 }, Mars: { ex: 9, deb: 3 },
+        Mercury: { ex: 5, deb: 11 }, Jupiter: { ex: 3, deb: 9 }, Venus: { ex: 11, deb: 5 },
+        Saturn: { ex: 6, deb: 0 }, Rahu: { ex: 1, deb: 7 }, Ketu: { ex: 7, deb: 1 }
+      };
+
+      if (exaltDebil[planet]) {
+        if (signIdx === exaltDebil[planet].ex) return { label: 'ဥစ္စ (အထွတ်အထိပ်)', color: 'text-amber-600 font-bold' };
+        if (signIdx === exaltDebil[planet].deb) return { label: 'နိစ္စ (အားလျော့)', color: 'text-rose-600 font-bold' };
+      }
+
+      const lord = RASI_LORDS[signIdx];
+      if (lord === planet) return { label: 'သယံ (ကသစ်)', color: 'text-emerald-700 font-bold' };
+
+      const rel = NATURAL_RELATIONS[planet];
+      if (rel) {
+        if (rel.friends.indexOf(lord) !== -1) return { label: 'မိတ်အိမ်', color: 'text-blue-600 font-medium' };
+        if (rel.enemies.indexOf(lord) !== -1) return { label: 'ရန်အိမ်', color: 'text-orange-600 font-medium' };
+        return { label: 'သမအိမ်', color: 'text-slate-600' };
+      }
+      return { label: 'သမအိမ်', color: 'text-slate-600' };
+    }
+
+function getAyanamsa(jd, type) {
+      if (type === 'tropical') return 0;
+      const d = jd - 2451545.0;
+      const lahiri = 23.85709 + (d / 365.25) * 0.013969;
+      if (type === 'lahiri') return lahiri;
+      if (type === 'kp') return lahiri - 0.095;
+      if (type === 'raman') return 22.4105 + (d / 365.25) * 0.013969;
+      return lahiri;
+    }
+
+function getJulianDay(year, month, day, hour, minute, tz) {
+      let y = parseInt(year, 10) || 2026;
+      let m = parseInt(month, 10) || 1;
+      let d = parseInt(day, 10) || 1;
+      let h = parseInt(hour, 10) || 0;
+      let mn = parseInt(minute, 10) || 0;
+      let t = parseFloat(tz);
+      if (isNaN(t)) t = 6.5;
+
+      if (m <= 2) { y -= 1; m += 12; }
+      const A = Math.floor(y / 100);
+      const B = 2 - A + Math.floor(A / 4);
+      const utHour = h + mn / 60.0 - t;
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + (utHour / 24.0) + B - 1524.5;
+    }
+
+function calculateNASA_JPL_Planets(jd, lat, lon, ayanamsaType, nodeType) {
+      lat = parseFloat(lat) || 0;
+      lon = parseFloat(lon) || 0;
+      ayanamsaType = ayanamsaType || 'lahiri';
+      nodeType = nodeType || 'mean';
+      const d = jd - 2451545.0;
+      const T = d / 36525.0;
+      const ayanamsa = getAyanamsa(jd, ayanamsaType);
+
+      const L0_sun = norm360(280.46646 + 36000.76983 * T);
+      const M_sun = norm360(357.52911 + 35999.05029 * T) * (Math.PI / 180);
+      const C_sun = (1.914602 - 0.004817 * T) * Math.sin(M_sun) + (0.019993 - 0.000101 * T) * Math.sin(2 * M_sun) + 0.000289 * Math.sin(3 * M_sun);
+      let sunTrop = norm360(L0_sun + C_sun);
+
+      const L_m = norm360(218.3164477 + 481267.88123421 * T);
+      const D = norm360(297.8501921 + 445267.1114034 * T) * (Math.PI / 180);
+      const M = norm360(357.5291092 + 35999.0502909 * T) * (Math.PI / 180);
+      const Mp = norm360(134.9633964 + 477198.8675055 * T) * (Math.PI / 180);
+      const F = norm360(93.2720950 + 483202.0175233 * T) * (Math.PI / 180);
+
+      let moonTrop = L_m +
+        6.288774 * Math.sin(Mp) +
+        1.274027 * Math.sin(2 * D - Mp) +
+        0.658314 * Math.sin(2 * D) +
+        0.213618 * Math.sin(2 * Mp) -
+        0.185116 * Math.sin(M) -
+        0.114332 * Math.sin(2 * F) +
+        0.058793 * Math.sin(2 * D - 2 * Mp) +
+        0.057066 * Math.sin(2 * D - M - Mp) +
+        0.053322 * Math.sin(2 * D + Mp) +
+        0.045758 * Math.sin(2 * D - M);
+      moonTrop = norm360(moonTrop);
+
+      let omega = norm360(125.04452 - 1934.136261 * T + 0.0020708 * T * T);
+      if (nodeType === 'true') {
+        omega -= (1.4979 * Math.sin(2 * (D - F)) + 0.15 * Math.sin(M));
+      }
+      let rahuTrop = norm360(omega);
+      let ketuTrop = norm360(rahuTrop + 180);
+
+      function getPlanetXYZ(a0, a_dot, e0, e_dot, I0, I_dot, L0, L_dot, w0, w_dot, N0, N_dot) {
+        const a = a0 + a_dot * T;
+        let e = e0 + e_dot * T;
+        if (e < 0.0001) e = 0.0001;
+        if (e > 0.999) e = 0.999;
+        const I = norm360(I0 + I_dot * T) * Math.PI / 180;
+        const L = norm360(L0 + L_dot * T);
+        const w = norm360(w0 + w_dot * T);
+        const N = norm360(N0 + N_dot * T) * Math.PI / 180;
+        const M_val = norm360(L - w);
+        const M_rad = M_val * Math.PI / 180;
+        let E = M_rad + e * Math.sin(M_rad);
+        for (let k = 0; k < 6; k++) {
+          E = E - (E - e * Math.sin(E) - M_rad) / (1 - e * Math.cos(E));
+        }
+        const x_prime = a * (Math.cos(E) - e);
+        const y_prime = a * Math.sqrt(Math.max(0.0001, 1 - e * e)) * Math.sin(E);
+        const w_rad = norm360(w - (N0 + N_dot * T)) * Math.PI / 180;
+        const x = (Math.cos(w_rad) * Math.cos(N) - Math.sin(w_rad) * Math.sin(N) * Math.cos(I)) * x_prime +
+                  (-Math.sin(w_rad) * Math.cos(N) - Math.cos(w_rad) * Math.sin(N) * Math.cos(I)) * y_prime;
+        const y = (Math.cos(w_rad) * Math.sin(N) + Math.sin(w_rad) * Math.cos(N) * Math.cos(I)) * x_prime +
+                  (-Math.sin(w_rad) * Math.sin(N) + Math.cos(w_rad) * Math.cos(N) * Math.cos(I)) * y_prime;
+        return { x, y };
+      }
+
+      const earth = getPlanetXYZ(1.00000261, 0.00000562, 0.01671123, -0.00004392, -0.00001531, -0.01294668, 100.46457166, 35999.37244981, 102.93768193, 0.32327364, 0, 0);
+      const toGeocentric = (pXYZ) => norm360(Math.atan2(pXYZ.y - earth.y, pXYZ.x - earth.x) * 180 / Math.PI);
+
+      const mercury = getPlanetXYZ(0.38709927, 0.00000037, 0.20563593, 0.00001906, 7.00497902, -0.00594749, 252.25032350, 149472.67411175, 77.45779628, 0.16047689, 48.33076593, -0.12534081);
+      const venus = getPlanetXYZ(0.72333566, 0.00000390, 0.00677672, -0.00004107, 3.39467605, -0.00078890, 181.97909950, 58517.81538729, 131.60246718, 0.00268329, 76.67984255, -0.27769418);
+      const mars = getPlanetXYZ(1.52371034, 0.00001847, 0.09339410, 0.00007882, 1.84969142, -0.00813131, -4.55343205, 19140.30268499, -23.94362959, 0.44441088, 49.55953891, -0.29257343);
+      const jupiter = getPlanetXYZ(5.20288700, -0.00011607, 0.04838624, -0.00013253, 1.30439695, -0.00183714, 34.39644051, 3034.74612775, 14.72847983, 0.21252668, 100.47390909, 0.20469106);
+      const saturn = getPlanetXYZ(9.53667594, -0.00125060, 0.05386179, -0.00050991, 2.48599187, 0.00193609, 49.95424423, 1222.49362201, 92.59887831, -0.41897216, 113.66242448, -0.28867794);
+      const uranus = getPlanetXYZ(19.18916464, -0.00196176, 0.04725744, -0.00004397, 0.77263783, -0.00242939, 313.23810451, 428.48202785, 170.95427630, 0.40805281, 74.01692503, 0.04240589);
+      const neptune = getPlanetXYZ(30.06992276, 0.00026291, 0.00860619, 0.00002150, 1.77004347, 0.00035372, -55.12002969, 218.45945325, 44.96476227, -0.32241464, 131.78422574, -0.00508664);
+      const pluto = getPlanetXYZ(39.48211675, -0.00031596, 0.24882730, 0.00005170, 17.14001206, 0.00004818, 238.92903833, 145.20780515, 224.06889900, -0.04062942, 110.30393608, -0.01183482);
+
+      const GMST0 = norm360(280.46061837 + 360.98564736629 * d);
+      const LMST = norm360(GMST0 + lon);
+      const eps = (23.439291 - 0.000130042 * T) * (Math.PI / 180);
+      const yAsc = Math.cos(LMST * (Math.PI / 180));
+      const xAsc = -Math.sin(LMST * (Math.PI / 180)) * Math.cos(eps) - Math.tan(lat * (Math.PI / 180)) * Math.sin(eps);
+      let lagnaTrop = norm360(Math.atan2(yAsc, xAsc) * (180 / Math.PI));
+
+      const toSid = (deg) => norm360(deg - ayanamsa);
+
+      return {
+        Lagna: toSid(lagnaTrop), Sun: toSid(sunTrop), Moon: toSid(moonTrop),
+        Mars: toSid(toGeocentric(mars)), Mercury: toSid(toGeocentric(mercury)),
+        Jupiter: toSid(toGeocentric(jupiter)), Venus: toSid(toGeocentric(venus)),
+        Saturn: toSid(toGeocentric(saturn)), Rahu: toSid(rahuTrop), Ketu: toSid(ketuTrop),
+        Uranus: toSid(toGeocentric(uranus)), Neptune: toSid(toGeocentric(neptune)),
+        Pluto: toSid(toGeocentric(pluto)), ayanamsaVal: ayanamsa
+      };
+    }
+
+function calculateVarga(longitude, v) {
+      const safeLon = norm360(longitude);
+      const sign = Math.floor(safeLon / 30) % 12;
+      const deg = safeLon % 30;
+      const isOdd = (sign % 2 === 0);
+
+      let res = sign;
+      if (v === 1) res = sign;
+      else if (v === 2) res = (deg < 15) ? (isOdd ? 4 : 3) : (isOdd ? 3 : 4);
+      else if (v === 3) res = (sign + Math.floor(deg / 10) * 4) % 12;
+      else if (v === 4) res = (sign + Math.floor(deg / 7.5) * 3) % 12;
+      else if (v === 5) {
+        const oddArr = [0, 10, 8, 2, 6], evenArr = [1, 5, 11, 9, 7];
+        const part = Math.min(4, Math.max(0, Math.floor(deg / 6)));
+        res = isOdd ? oddArr[part] : evenArr[part];
+      }
+      else if (v === 6) res = ((isOdd ? 0 : 6) + Math.floor(deg / 5)) % 12;
+      else if (v === 7) res = ((isOdd ? sign : sign + 6) + Math.floor(deg / (30 / 7))) % 12;
+      else if (v === 8) {
+        const start = (sign % 3 === 0) ? 0 : ((sign % 3 === 1) ? 8 : 4);
+        res = (start + Math.floor(deg / 3.75)) % 12;
+      }
+      else if (v === 9) res = ([0, 9, 6, 3][sign % 4] + Math.floor(deg / (30 / 9))) % 12;
+      else if (v === 10) res = ((isOdd ? sign : sign + 8) + Math.floor(deg / 3)) % 12;
+      else if (v === 11) res = (11 - sign + Math.floor(deg / (30 / 11)) + 12) % 12;
+      else if (v === 12) res = (sign + Math.floor(deg / 2.5)) % 12;
+      else if (v === 16) {
+        const start = (sign % 3 === 0) ? 0 : ((sign % 3 === 1) ? 4 : 8);
+        res = (start + Math.floor(deg / (30 / 16))) % 12;
+      }
+      else if (v === 20) {
+        const start = (sign % 3 === 0) ? 0 : ((sign % 3 === 1) ? 8 : 4);
+        res = (start + Math.floor(deg / 1.5)) % 12;
+      }
+      else if (v === 24) res = ((isOdd ? 4 : 3) + Math.floor(deg / 1.25)) % 12;
+      else if (v === 27) res = ([0, 3, 6, 9][sign % 4] + Math.floor(deg / (30 / 27))) % 12;
+      else if (v === 30) {
+        if (isOdd) {
+          res = (deg < 5) ? 0 : (deg < 10 ? 10 : (deg < 18 ? 8 : (deg < 25 ? 2 : 6)));
+        } else {
+          res = (deg < 5) ? 1 : (deg < 12 ? 5 : (deg < 20 ? 11 : (deg < 25 ? 9 : 7)));
+        }
+      }
+      else if (v === 40) res = ((isOdd ? 0 : 6) + Math.floor(deg / 0.75)) % 12;
+      else if (v === 45) {
+        const start = (sign % 3 === 0) ? 0 : ((sign % 3 === 1) ? 4 : 8);
+        res = (start + Math.floor(deg / (30 / 45))) % 12;
+      }
+      else if (v === 60) res = ((isOdd ? sign : sign + 6) + Math.floor(deg / 0.5)) % 12;
+
+      return ((Math.floor(res) % 12) + 12) % 12;
+    }
+
+function calculateDashaTree(moonLong, birthDate) {
+      const safeMoon = norm360(moonLong);
+      const nakTotal = safeMoon / (360 / 27);
+      const nakIndex = norm360(Math.floor(nakTotal));
+      const lordIndex = ((nakIndex % 9) + 9) % 9;
+      const mLordInitial = DASHA_LORDS[lordIndex] || DASHA_LORDS[0];
+      const balanceYears = Math.max(0.01, (1 - (nakTotal - Math.floor(nakTotal))) * mLordInitial.years);
+      const fmt = (d) => {
+        try {
+          if (!d || isNaN(d.getTime())) return '2026-01-01';
+          return d.toISOString().split('T')[0];
+        } catch(e) {
+          return '2026-01-01';
+        }
+      };
+
+      const list = [];
+      let cur = (birthDate && !isNaN(birthDate.getTime())) ? new Date(birthDate.getTime()) : new Date();
+
+      for (let i = 0; i < 9; i++) {
+        const mIdx = (lordIndex + i) % 9;
+        const mLord = DASHA_LORDS[mIdx] || DASHA_LORDS[0];
+        const dur = (i === 0) ? balanceYears : mLord.years;
+        let mEnd = new Date(cur.getTime() + dur * 365.25 * 86400000);
+        const antars = [];
+        let aCur = new Date(cur.getTime());
+        for (let j = 0; j < 9; j++) {
+          const aIdx = (mIdx + j) % 9;
+          const aLord = DASHA_LORDS[aIdx] || DASHA_LORDS[0];
+          const aDur = (mLord.years * aLord.years) / 120.0 * (dur / mLord.years);
+          let aEnd = new Date(aCur.getTime() + aDur * 365.25 * 86400000);
+          antars.push({ lord: aLord.name, start: fmt(aCur), end: fmt(aEnd) });
+          aCur = aEnd;
+        }
+        list.push({ lord: mLord.name, years: dur.toFixed(2), start: fmt(cur), end: fmt(mEnd), antars });
+        cur = mEnd;
+      }
+      return list;
+    }
+
+function _planetHouse(p, name) {
+      if (!p || typeof p[name] !== 'number' || typeof p.Lagna !== 'number') return 1;
+      const lSign = calculateVarga(p.Lagna, 1);
+      const pSign = calculateVarga(p[name], 1);
+      return ((pSign - lSign + 12) % 12) + 1;
+    }
+
+function _planetStrength(p, name) {
+      if (!p || typeof p[name] !== 'number') return 50;
+      const sIdx = calculateVarga(p[name], 1);
+      const dignity = getPlanetaryDignity(name, sIdx);
+      if (dignity.label.includes('ဥစ္စ')) return 95;
+      if (dignity.label.includes('သယံ')) return 80;
+      if (dignity.label.includes('မိတ်')) return 65;
+      if (dignity.label.includes('သမ')) return 50;
+      if (dignity.label.includes('ရန်')) return 35;
+      if (dignity.label.includes('နိစ္စ')) return 20;
+      return 50;
+    }
+
+function _lordOfHouse(p, h) {
+      if (!p || typeof p.Lagna !== 'number') return 'Jupiter';
+      const lSign = calculateVarga(p.Lagna, 1);
+      const rasiIdx = ((lSign + (h - 1)) % 12 + 12) % 12;
+      return RASI_LORDS[rasiIdx] || 'Jupiter';
+    }
+
+function _jdFromDate(d, tz){ return getJulianDay(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), (tz == null || isNaN(tz)) ? 6.5 : tz); }
+// ================= Medini (Mundane) app =================
+const SIGN_MM = ['မိဿ', 'ပြိဿ', 'မေထုန်', 'ကရကဋ်', 'သိဟ်', 'ကန်', 'တူ', 'ဗြိစ္ဆာ', 'ဓနု', 'မကာရ', 'ကုံ', 'မိန်'];
+const PLANETS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+const PLANET_MM = { Sun: 'နေ', Moon: 'လ', Mars: 'အင်္ဂါ', Mercury: 'ဗုဒ္ဓဟူး', Jupiter: 'ကြာသပတေး', Venus: 'သောကြာ', Saturn: 'စနေ', Rahu: 'ရာဟု', Ketu: 'ကေတု', Lagna: 'လဂ်' };
+const BENEFIC = ['Jupiter', 'Venus', 'Mercury', 'Moon'];
+const MALEFIC = ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'];
+
+const COUNTRIES = [
+  { id: 'mm', name: 'မြန်မာ · Myanmar', date: '1948-01-04', time: '04:20', city: 'ရန်ကုန်', lat: 16.84, lon: 96.17, tz: 6.5, basis: 'လွတ်လပ်ရေး ကြေညာချိန်' },
+  { id: 'in', name: 'အိန္ဒိယ · India', date: '1947-08-15', time: '00:00', city: 'နယူးဒေလီ', lat: 28.61, lon: 77.21, tz: 5.5, basis: 'လွတ်လပ်ရေး သန်းခေါင်' },
+  { id: 'th', name: 'ထိုင်း · Thailand', date: '1782-04-21', time: '05:54', city: 'ဘန်ကောက်', lat: 13.75, lon: 100.50, tz: 7, basis: 'ရတနကောသိန် ခေတ် တည်ထောင်ချိန်' },
+  { id: 'sg', name: 'စင်္ကာပူ · Singapore', date: '1965-08-09', time: '10:00', city: 'စင်္ကာပူ', lat: 1.35, lon: 103.82, tz: 8, basis: 'လွတ်လပ်ရေး ကြေညာချိန်' },
+  { id: 'cn', name: 'တရုတ် · China', date: '1949-10-01', time: '15:00', city: 'ပေကျင်း', lat: 39.90, lon: 116.40, tz: 8, basis: 'PRC ကြေညာချိန်' },
+  { id: 'jp', name: 'ဂျပန် · Japan', date: '1952-04-28', time: '22:30', city: 'တိုကျို', lat: 35.68, lon: 139.69, tz: 9, basis: 'အချုပ်အခြာ ပြန်လည် ရချိန်' },
+  { id: 'us', name: 'အမေရိကန် · USA', date: '1776-07-04', time: '17:10', city: 'Philadelphia', lat: 39.95, lon: -75.16, tz: -5, basis: 'လွတ်လပ်ရေး ကြေညာစာတမ်း (Sibly)' },
+  { id: 'uk', name: 'ဗြိတိန် · UK', date: '1801-01-01', time: '00:00', city: 'လန်ဒန်', lat: 51.50, lon: -0.12, tz: 0, basis: 'Union ခေတ် အစ' }
+];
+const DOMAINS = [
+  { h: 1, name: 'ပြည်သူ / နိုင်ငံ့ အခြေခံ' }, { h: 2, name: 'ဘဏ္ဍာ / စီးပွား' }, { h: 3, name: 'ဆက်သွယ် / သယ်ယူ / အိမ်နီးချင်း' },
+  { h: 4, name: 'မြေ / စိုက်ပျိုး / ပြည်သူ့ နေ အိမ်' }, { h: 5, name: 'အနုပညာ / အားကစား / မျိုးဆက်' }, { h: 6, name: 'ကျန်းမာ / အလုပ်သမား / အကြွေး' },
+  { h: 7, name: 'နိုင်ငံခြား ဆက်ဆံ / ကုန်သွယ် မိတ်ဖက်' }, { h: 8, name: 'အကျပ်အတည်း / အစုလိုက် ဘေး' }, { h: 9, name: 'ဘာသာရေး / တရား / ပညာ အမြင့်' },
+  { h: 10, name: 'အစိုးရ / အုပ်ချုပ်ရေး' }, { h: 11, name: 'လွှတ်တော် / မဟာမိတ် / ဝင်ငွေ' }, { h: 12, name: 'ဆုံးရှုံး / နိုင်ငံခြား အသုံးစရိတ်' }
+];
+const NATION_CHAR = [
+  'မိဿ လဂ် နိုင်ငံ မို့ စတင် လှုပ်ရှား အား ကောင်း ပြီး ကိုယ့် လမ်း ကိုယ် ဖွင့် တတ်တဲ့ စရိုက် ရှိတယ်။ ဒီရပ်တည်မှုကြောင့်ပဲ ဆုံးဖြတ်ချက် မြန် ပေမယ့် ရေရှည် ထိန်းသိမ်း မှုမှာ စည်းကမ်း လိုတတ်တယ်။',
+  'ပြိဿ လဂ် နိုင်ငံ မို့ မြေ/သယံဇာတ အခြေခံ ကို တန်ဖိုး ထား ပြီး ဖြည်းဖြည်း တည် ဆောက် တတ်တဲ့ စရိုက် ရှိတယ်။ ပြောင်းလဲ မှု နှေး ပေမယ့် တစ်ခါ တည် ဆောက် ပြီးရင် ခိုင်မာ တယ်။',
+  'မေထုန် လဂ် နိုင်ငံ မို့ ဆက်သွယ်ရေး/ကုန်သွယ်/ပညာ နဲ့ အသက် ရှင် တတ်တဲ့ စရိုက် ရှိတယ်။ သတင်း စီးဆင်းမှု မြန် ပြီး အမြင် နှစ်ဖက် ပြိုင် နေ တတ်တာ သဘာဝ ပဲ။',
+  'ကရကဋ် လဂ် နိုင်ငံ မို့ ပြည်သူ့ စိတ် နဲ့ မိသားစု/နေအိမ် ကို အလေး ထား တဲ့ စရိုက် ရှိတယ်။ အမျိုးသား စိတ် ပြင်း ပြီး အတိတ် ကို တန်ဖိုး ထား တတ် တယ်။',
+  'သိဟ် လဂ် နိုင်ငံ မို့ ခေါင်းဆောင်မှု နဲ့ ဂုဏ်သိက္ခာ ကို မျက်နှာ ထား တဲ့ စရိုက် ရှိတယ်။ ဗဟို အာဏာ ပြင်း တတ် ပြီး ပြည်သူ က ခေါင်းဆောင် ကို ကြည့် နေ တတ် တယ်။',
+  'ကန် လဂ် နိုင်ငံ မို့ စနစ်/စည်းကမ်း/အသေးစိတ် နဲ့ သွား တတ်တဲ့ စရိုက် ရှိတယ်။ ဝန်ဆောင်မှု နဲ့ ကုန်ထုတ် မှာ အားသာ ပြီး ကိုယ့် ကိုယ် ကို ဝေဖန် အား လည်း များတယ်။',
+  'တူ လဂ် နိုင်ငံ မို့ ညှိနှိုင်း/စေ့စပ်/ကုန်သွယ် နဲ့ မျှတ အောင် နေ တတ်တဲ့ စရိုက် ရှိတယ်။ မဟာမိတ် ဆက်ဆံရေး က ကံကြမ္မာ မှာ အရေးပါ တယ်။',
+  'ဗြိစ္ဆာ လဂ် နိုင်ငံ မို့ အတွင်း အား ပြင်း ပြီး အကျပ်အတည်း မှာ ခံနိုင် ရည် ထူး တဲ့ စရိုက် ရှိတယ်။ လျှို့ဝှက်/လုံခြုံရေး ကိစ္စ တွေ ကြီးစိုး တတ် ပြီး အပြောင်းအလဲ က ရုတ်တရက် လာ တတ်တယ်။',
+  'ဓနု လဂ် နိုင်ငံ မို့ ဘာသာရေး/အယူဝါဒ/ပညာ က လမ်းပြ တတ်တဲ့ စရိုက် ရှိတယ်။ အမြင် ကျယ် ပေမယ့် အယူ အစွဲ ကြောင့် အငြင်းပွား လည်း ဖြစ်တတ်တယ်။',
+  'မကာရ လဂ် နိုင်ငံ မို့ အဖွဲ့အစည်း/အဆင့်ဆင့် အုပ်ချုပ် မှု နဲ့ ရေရှည် တည် ဆောက် တတ်တဲ့ စရိုက် ရှိတယ်။ ဖြည်းဖြည်း တက် ပေမယ့် တက်ပြီး ရင် မဆင်း လွယ်ဘူး။',
+  'ကုံ လဂ် နိုင်ငံ မို့ အဖွဲ့/ကွန်ရက်/စိတ်ကူး ဆန်းသစ် မှု နဲ့ သွား တတ်တဲ့ စရိုက် ရှိတယ်။ လူထု လှုပ်ရှား မှု တွေ ကြိုမြင် ခက် ပြီး ဦးတည် ချက် ရုတ်တရက် ပြောင်း တတ်တယ်။',
+  'မိန် လဂ် နိုင်ငံ မို့ ဘာသာရေး/ကရုဏာ/အနုပညာ စိတ် နက်တဲ့ စရိုက် ရှိတယ်။ နယ်နိမိတ်/ရေကြောင်း ကိစ္စ တွေ နဲ့ ဆက် နေ တတ် ပြီး စိတ် ကူး နဲ့ လက်တွေ့ ညှိ ရခက် တတ်တယ်။'
+];
+const MOOD = [
+  'ပြည်သူ့ စိတ် က လုပ်ရဲ ကိုင်ရဲ ဘက် များ ပြီး သည်းခံ အား နည်း တတ်တယ်', 'ပြည်သူ့ စိတ် က လုံခြုံ မှု/အစား အသောက် ကို အလေး ထား ပြီး ပြောင်းလဲ မှု ကို သတိ နဲ့ ကြည့် တယ်',
+  'ပြည်သူ့ စိတ် က သတင်း/ဆက်သွယ် မှာ အသက် ဝင် ပြီး အမြင် စုံ တယ်', 'ပြည်သူ့ စိတ် က မိသားစု/နေရပ် နဲ့ နက်နက် ဆက် ပြီး ခံစား လွယ် တယ်',
+  'ပြည်သူ့ စိတ် က ဂုဏ်/ခေါင်းဆောင် ကို အားကိုး တတ် ပြီး တက်ကြွ တယ်', 'ပြည်သူ့ စိတ် က အသေးစိတ်/ကျန်းမာ/ဝန်ဆောင်မှု ကို ဂရုစိုက် ပြီး စိုးရိမ် လည်း များ တတ်တယ်',
+  'ပြည်သူ့ စိတ် က မျှတ မှု/ငြိမ်းချမ်းမှု ကို လိုလား ပြီး ဆုံးဖြတ်ချက် မှာ နှစ်ဖက် ချိန် တယ်', 'ပြည်သူ့ စိတ် က အတွင်း မှာ ပြင်း ထန် ပြီး ယုံကြည် မှု ကိစ္စ မှာ တင်းမာ တတ်တယ်',
+  'ပြည်သူ့ စိတ် က ယုံကြည် မှု/မျှော်လင့်ချက် ဘက် သွား ပြီး ဆရာ/အယူ ကို အားကိုး တယ်', 'ပြည်သူ့ စိတ် က လက်တွေ့ ဆန် ပြီး အဖွဲ့အစည်း ကို ယုံကြည် မှု က စွမ်းဆောင်ရည် အပေါ် မူတည် တယ်',
+  'ပြည်သူ့ စိတ် က လူထု/အဖွဲ့ လှုပ်ရှား မှု ဘက် ပါဝင် လွယ် ပြီး ဆန်းသစ် မှု ကို လက်ခံ တယ်', 'ပြည်သူ့ စိတ် က နူးညံ့ ပြီး ဘာသာရေး/ကရုဏာ ဘက် ယိုင် တယ်၊ ခံစား လွယ် ဆုံး ပုံစံ ပဲ'
+];
+const SAMVA = ['Prabhava', 'Vibhava', 'Shukla', 'Pramoduta', 'Prajothpatti', 'Angirasa', 'Shrimukha', 'Bhava', 'Yuva', 'Dhata', 'Eshvara', 'Bahudhanya', 'Pramadi', 'Vikrama', 'Vrisha', 'Chitrabhanu', 'Subhanu', 'Tarana', 'Parthiva', 'Vyaya', 'Sarvajit', 'Sarvadhari', 'Virodhi', 'Vikruti', 'Khara', 'Nandana', 'Vijaya', 'Jaya', 'Manmatha', 'Durmukhi', 'Hevilambi', 'Vilambi', 'Vikari', 'Sarvari', 'Plava', 'Subhakrut', 'Shobhakrut', 'Krodhi', 'Visvavasu', 'Parabhava', 'Plavanga', 'Keelaka', 'Saumya', 'Sadharana', 'Virodhakrut', 'Paridhavi', 'Pramadicha', 'Ananda', 'Rakshasa', 'Anala', 'Pingala', 'Kalayukti', 'Siddharthi', 'Raudra', 'Durmati', 'Dundubhi', 'Rudhirodgari', 'Rakthakshi', 'Krodhana', 'Akshaya'];
+const SECTORS = [
+  { key: 'econ', name: '💰 စီးပွား / ဘဏ္ဍာ', houses: [2, 11] },
+  { key: 'agri', name: '🌾 စိုက်ပျိုး / ဆန်ရေစပါး', houses: [4] },
+  { key: 'weather', name: '🌧️ မိုးလေဝသ / သဘာဝဘေး', houses: [8, 4] },
+  { key: 'gov', name: '🏛️ အုပ်ချုပ်ရေး', houses: [10] },
+  { key: 'health', name: '🩺 ပြည်သူ့ ကျန်းမာ / ကပ်ရောဂါ', houses: [1, 6] },
+  { key: 'edu', name: '📚 ပညာ / ဘာသာရေး', houses: [5, 9] },
+  { key: 'foreign', name: '🌏 နိုင်ငံခြား ဆက်ဆံရေး', houses: [7, 12] },
+  { key: 'trade', name: '🚢 ကုန်သွယ် / ခရီးသွား', houses: [3, 7, 9] }
+];
+const SECTOR_LINES = {
+  econ: { good: 'ဘဏ္ဍာ အခြေခံ ခိုင် ပြီး ဝင်ငွေ လမ်းကြောင်း ပွင့် တဲ့ နှစ်မျိုး ဖြစ်တယ် — ရင်းနှီး မှု ဆွဲ ဆောင် လို့ ကောင်း တဲ့ ကာလ ပဲ။', mid: 'စီးပွား က အလယ်အလတ် — ဝင်ငွေ ရှိပေမယ့် အသုံးစရိတ် ချိန် ရမယ့် နှစ် ဖြစ်တယ်။', bad: 'ဘဏ္ဍာ ဘက် ဖိအား များ တဲ့ နှစ် — အကြွေး/ငွေလဲ နှုန်း ကိစ္စ တွေ သတိထား ပြီး အရံ ငွေ ထိန်း သင့် တယ်။' },
+  agri: { good: 'မိုး/မြေ အခြေအနေ ထောက်ပံ့ ပြီး ဆန်ရေစပါး ပေါ များ နိုင် တဲ့ နှစ် မျိုး ဖြစ်တယ်။', mid: 'စိုက်ပျိုး က ပုံမှန် အဆင့် — ဒေသ အလိုက် ကွာခြား ချက် ရှိ မယ့် နှစ် ပဲ။', bad: 'စိုက်ပျိုး ဘက် အခက်အခဲ သတိထား ရမယ့် နှစ် — မိုး မမှန်/ပိုး/ရေ ကိစ္စ တွေ အတွက် ကြို ပြင် သင့် တယ်။' },
+  weather: { good: 'သဘာဝဘေး ဘက် ကြီးကြီးမားမား ဖိအား နည်း တဲ့ နှစ် မျိုး ဖြစ်တယ်။', mid: 'မိုးလေ က ပုံမှန် အတွင်း ရှိပေမယ့် ရာသီ အစွန် ကိစ္စ အနည်းငယ် သတိထား ရမယ်။', bad: 'သဘာဝဘေး အချက် တွေ စု နေ တဲ့ နှစ် — ရေကြီး/မုန်တိုင်း/မြေငလျင် သတိ နဲ့ ကြိုတင် ပြင်ဆင် မှု အထူး လို တယ်။' },
+  gov: { good: 'အုပ်ချုပ်ရေး တည်ငြိမ် ပြီး ဆုံးဖြတ်ချက် တွေ အကျိုး သက်ရောက် ကောင်း တဲ့ နှစ် ဖြစ်တယ်။', mid: 'အုပ်ချုပ်ရေး က အလယ်အလတ် — အတွင်း ညှိနှိုင်း မှု တွေ နဲ့ အချိန် ကုန် မယ့် နှစ် ပဲ။', bad: 'အုပ်ချုပ်ရေး ဘက် တင်းမာ မှု/အပြောင်းအလဲ ဖိအား များ တဲ့ နှစ် — ပြည်သူ့ စိတ် ကို ဂရုစိုက် ကိုင်တွယ် သင့် တယ်။' },
+  health: { good: 'ပြည်သူ့ ကျန်းမာ အခြေခံ ကောင်း ပြီး ကပ်ရောဂါ ဘေး နည်း တဲ့ နှစ် မျိုး ဖြစ်တယ်။', mid: 'ကျန်းမာ ရေး က ပုံမှန် — ရာသီ ရောဂါ အဆင့် မှာ ထိန်း ထား နိုင် မယ့် နှစ် ပဲ။', bad: 'ကျန်းမာ ရေး သတိ အထူး ထား ရမယ့် နှစ် — ကပ်ရောဂါ/ပတ်ဝန်းကျင် ကျန်းမာ ကိစ္စ တွေ အတွက် စနစ် ကြို ပြင် သင့် တယ်။' },
+  edu: { good: 'ပညာ/ဘာသာရေး နယ်ပယ် တည်ငြိမ် စည်ကား တဲ့ နှစ် ဖြစ်တယ်။', mid: 'ပညာ နယ်ပယ် က အလယ်အလတ် — မူဝါဒ ညှိနှိုင်း မှု တွေ ရှိ မယ့် နှစ် ပဲ။', bad: 'ဘာသာရေး/ပညာ နယ်ပယ် မှာ အငြင်းပွား/တင်းမာ မှု ရှိ နိုင် တဲ့ နှစ် — ညှိနှိုင်း ကိုင်တွယ် သင့် တယ်။' },
+  foreign: { good: 'နိုင်ငံခြား ဆက်ဆံရေး ပွင့် လန်း ပြီး မဟာမိတ် အကျိုး ရ တဲ့ နှစ် ဖြစ်တယ်။', mid: 'ဆက်ဆံရေး က အလယ်အလတ် — တစ်ဖက် ချင်း ညှိ သွား ရမယ့် နှစ် ပဲ။', bad: 'နိုင်ငံခြား ဘက် ဖိအား/အငြင်းပွား သတိထား ရမယ့် နှစ် — စေ့စပ် လမ်း ကို ပွင့် ထား သင့် တယ်။' },
+  trade: { good: 'ကုန်သွယ်/ခရီးသွား စီးဆင်း ကောင်း ပြီး ဝင်ငွေ ဖြည့် ပေး တဲ့ နှစ် ဖြစ်တယ်။', mid: 'ကုန်သွယ် က ပုံမှန် — လမ်းကြောင်း အလိုက် ကွာ မယ့် နှစ် ပဲ။', bad: 'ကုန်သွယ် လမ်းကြောင်း အတားအဆီး သတိထား ရမယ့် နှစ် — အခြား ဈေးကွက် ကြို ရှာ ထား သင့် တယ်။' }
+};
+
+// ---------- helpers ----------
+const $ = (id) => document.getElementById(id);
+const signOf = (deg) => Math.floor((((deg % 360) + 360) % 360) / 30);
+const degInSign = (deg) => ((((deg % 360) + 360) % 360) % 30);
+const relHouse = (sign, refSign) => ((sign - refSign + 12) % 12) + 1;
+function customCountries() { try { return JSON.parse(localStorage.getItem('medini_custom') || '[]'); } catch (e) { return []; } }
+function allCountries() { return COUNTRIES.concat(customCountries()); }
+function getCountry(id) { return allCountries().find(c => c.id === id) || COUNTRIES[0]; }
+const chartCache = {};
+function chartOf(c) {
+  const ayan = $('ayanSel').value;
+  const key = c.id + '|' + ayan;
+  if (chartCache[key]) return chartCache[key];
+  const [y, m, d] = c.date.split('-').map(Number);
+  const [hh, mm] = c.time.split(':').map(Number);
+  const jd = getJulianDay(y, m, d, hh, mm, c.tz);
+  const p = calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean');
+  const tree = calculateDashaTree(p.Moon, new Date(y, m - 1, d, hh, mm));
+  const out = { p, tree };
+  chartCache[key] = out;
+  return out;
+}
+function transitNow(c) {
+  const ayan = $('ayanSel').value;
+  const jd = Date.now() / 86400000 + 2440587.5;
+  return calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean');
+}
+function gradeOf(st) { return st >= 68 ? 'အားကောင်း' : st >= 45 ? 'အလယ်အလတ်' : 'ဂရုစိုက်'; }
+function chip(g) { return `<span class="chip ${g === 'အားကောင်း' ? 'g-good' : g === 'အလယ်အလတ်' ? 'g-mid' : 'g-bad'}">${g}</span>`; }
+function assessDomain(p, h) {
+  const lord = _lordOfHouse(p, h);
+  let st = _planetStrength(p, lord);
+  if (typeof st !== 'number') st = 50;
+  PLANETS.forEach(pl => {
+    if (_planetHouse(p, pl) === h) {
+      if (BENEFIC.includes(pl)) st += 5;
+      if (MALEFIC.includes(pl)) st -= 5;
+      if (pl === 'Saturn' && h === 10) st += 6;
+    }
+  });
+  st = Math.max(3, Math.min(97, Math.round(st)));
+  return { lord, st, grade: gradeOf(st) };
+}
+function currentEra(tree) {
+  const nowStr = new Date().toISOString().slice(0, 10);
+  for (const m of tree) {
+    if (nowStr >= m.start && nowStr < m.end) {
+      const an = (m.antars || []).find(a => nowStr >= a.start && nowStr < a.end);
+      return { maha: m.lord, antar: an ? an.lord : null, start: m.start, end: m.end };
+    }
+  }
+  return null;
+}
+function eraOf(tree, dateStr) {
+  for (const m of tree) { if (dateStr >= m.start && dateStr < m.end) return m.lord; }
+  return null;
+}
+function domainsOfLord(p, lord) { return DOMAINS.filter(d => _lordOfHouse(p, d.h) === lord).map(d => d.name); }
+
+// ---------- Tab 1: Profile ----------
+function renderProfile() {
+  const c = getCountry(state.country);
+  const { p, tree } = chartOf(c);
+  const lagSign = signOf(p.Lagna), moonSign = signOf(p.Moon);
+  let html = `<div class="card"><h2>🏛️ ${c.name} — နိုင်ငံ ပရိုဖိုင်</h2>
+    <p class="small">မွေးချိန်: ${c.date} ${c.time} · ${c.city} (${c.basis}) · လဂ် ${SIGN_MM[lagSign]} · လ ${SIGN_MM[moonSign]}</p>
+    <p class="line">${NATION_CHAR[lagSign]}</p>
+    <p class="line">${MOOD[moonSign]}။</p>`;
+  const era = currentEra(tree);
+  if (era) {
+    const doms = domainsOfLord(p, era.maha);
+    html += `<p class="line">လက်ရှိ ခေတ်: <b>${PLANET_MM[era.maha]} မဟာဒဿာ</b> (${era.start} → ${era.end})${era.antar ? ` · အန္တရ ${PLANET_MM[era.antar]}` : ''} — ဒီ ခေတ် မှာ ${doms.length ? doms.join('၊ ') + ' နယ်ပယ် တွေ ရှေ့တန်း ရောက် နေ တယ်' : 'အခြေခံ နယ်ပယ် တွေ လည်ပတ် နေ တယ်'}။</p>`;
+  }
+  html += `<h3>ဂြိုဟ် တည်နေရာ</h3><table><tr><th>ဂြိုဟ်</th><th>ရာသီ</th><th>ဒီဂရီ</th><th>တန့်</th><th>အား</th></tr>`;
+  ['Lagna'].concat(PLANETS).forEach(pl => {
+    const st = pl === 'Lagna' ? '' : (typeof _planetStrength(p, pl) === 'number' ? _planetStrength(p, pl) : '—');
+    html += `<tr><td>${PLANET_MM[pl]}</td><td>${SIGN_MM[signOf(p[pl])]}</td><td>${degInSign(p[pl]).toFixed(1)}°</td><td>${pl === 'Lagna' ? 1 : _planetHouse(p, pl)}</td><td>${st}</td></tr>`;
+  });
+  html += `</table></div>`;
+  // bhava domains
+  html += `<div class="card"><h2>🏠 ဘာဝ — နိုင်ငံ နယ်ပယ် အားသာချက်</h2><div class="grid2">`;
+  DOMAINS.forEach(d => {
+    const a = assessDomain(p, d.h);
+    const occ = PLANETS.filter(pl => _planetHouse(p, pl) === d.h).map(pl => PLANET_MM[pl]).join(' ');
+    html += `<div class="dom"><b>${d.h} တန့် · ${d.name}</b> ${chip(a.grade)}<div class="small">အရှင် ${PLANET_MM[a.lord]} (အား ${a.st})${occ ? ' · ရပ်ဂြိုဟ်: ' + occ : ''}</div><div class="bar-wrap"><div class="bar-fill" style="width:${a.st}%"></div></div></div>`;
+  });
+  html += `</div></div>`;
+  // yogas
+  const yogas = [];
+  const moonS = moonSign, jupRel = relHouse(signOf(p.Jupiter), moonS);
+  if ([1, 4, 7, 10].includes(jupRel)) yogas.push({ n: '🌟 ဂဇကေသရီ ယောဂ (လ မှ ကြာသပတေး ကိန်းတန့်)', t: 'နိုင်ငံ့ ဂုဏ်သိက္ခာ နဲ့ တည်ငြိမ်မှု ကို ထောက်တဲ့ အချက် — အကျပ် ကာလ မှာ ပြန် ထ နိုင် အား ရှိတယ်။' });
+  const gov = assessDomain(p, 10); if (gov.st >= 70) yogas.push({ n: '👑 အုပ်ချုပ်ရေး အခြေခံ ခိုင်', t: '၁၀ တန့် အရှင် အား ကောင်း လို့ အဖွဲ့အစည်း တည်ဆောက် နိုင်အား နဲ့ အမိန့် စီးဆင်း မှု ခိုင်တယ်။' });
+  const fin = assessDomain(p, 2), gain = assessDomain(p, 11);
+  if (fin.st >= 65 && gain.st >= 60) yogas.push({ n: '💰 ဘဏ္ဍာ ကြီးပွား အချက်', t: '၂ တန့် နဲ့ ၁၁ တန့် နှစ် ခု လုံး ထောက် ထား လို့ ဝင်ငွေ အခြေခံ ကျယ် တဲ့ ပုံစံ ဖြစ်တယ်။' });
+  const moonAff = ['Saturn', 'Rahu'].some(pl => { const d = Math.abs(signOf(p[pl]) - moonS); return d === 0 || d === 6; });
+  if (moonAff) yogas.push({ n: '🌧️ ပြည်သူ့ စိတ် ဖိအား အချက်', t: 'လ ကို စနေ/ရာဟု ထိ ထား လို့ ပြည်သူ့ စိတ် မအေး မှု ကာလ တွေ ပြန် ပြန် လာ တတ် တယ် — ခေါင်းဆောင် တွေ အတွက် စိတ် ပညာ ကိုင်တွယ် မှု အရေးကြီး တယ်။' });
+  const crisis = assessDomain(p, 8);
+  if (crisis.st < 40) yogas.push({ n: '⚠️ အကျပ်အတည်း သတိ အချက်', t: '၈ တန့် အားနည်း လို့ အစုလိုက် ဘေး/အကျပ် ကာလ မှာ ထိခိုက် လွယ် တယ် — ကြိုတင် ပြင်ဆင် စနစ် က ဒီနိုင်ငံ အတွက် အသက် ပဲ။' });
+  html += `<div class="card"><h2>🧘 ယောဂ / အထူး အချက်များ</h2>` + (yogas.length ? yogas.map(y => `<p class="line"><b>${y.n}</b> — ${y.t}</p>`).join('') : '<p class="line">ထင်ရှားတဲ့ ယောဂ အထူး အချက် မတွေ့ပါ — အခြေခံ ညီတဲ့ ဇာတာ မျိုး ဖြစ်တယ်။</p>') + `</div>`;
+  // dasha eras
+  html += `<div class="card"><h2>🕰️ ဒဿာ ခေတ် အပိုင်းများ</h2>`;
+  tree.forEach(m => {
+    const nowStr = new Date().toISOString().slice(0, 10);
+    const cur = nowStr >= m.start && nowStr < m.end;
+    const doms = domainsOfLord(p, m.lord).slice(0, 3).join('၊ ');
+    html += `<p class="line">${cur ? '▶ ' : ''}<b>${PLANET_MM[m.lord]}</b> ${m.start} → ${m.end}${cur ? ' <span class="chip g-info">လက်ရှိ</span>' : ''}${doms ? ` <span class="small">— ${doms}</span>` : ''}</p>`;
+  });
+  html += `</div>`;
+  $('tab-profile').innerHTML = html;
+}
+
+// ---------- Tab 2: Transit + cycles ----------
+function renderTransit() {
+  const c = getCountry(state.country);
+  const { p, tree } = chartOf(c);
+  const tp = transitNow(c);
+  const lagSign = signOf(p.Lagna), moonSign = signOf(p.Moon);
+  let html = `<div class="card"><h2>🌐 လက်ရှိ ကောဇာ — ${c.name}</h2>
+    <p class="small">ဒီနေ့ ဂြိုဟ် တွေ က နိုင်ငံ ဇာတာ အပေါ် ဘယ် တန့် ကနေ ဖြတ် နေ လဲ (လဂ် မှ / လ မှ)</p>`;
+  ['Saturn', 'Jupiter', 'Rahu', 'Mars', 'Sun', 'Moon'].forEach(pl => {
+    const s = signOf(tp[pl]);
+    html += `<p class="line"><b>${PLANET_MM[pl]}</b> ${SIGN_MM[s]} ရာသီ မှာ — လဂ် မှ ${relHouse(s, lagSign)} တန့် · လ မှ ${relHouse(s, moonSign)} တန့်</p>`;
+  });
+  const satRel = relHouse(signOf(tp.Saturn), moonSign);
+  if ([12, 1, 2].includes(satRel)) html += `<p class="line">🪐 <b>စာဒေးစာတီ ကာလ</b> ထဲမှာ ရှိတယ် (စနေ က လ ရဲ့ ${satRel === 12 ? 'ရှေ့' : satRel === 1 ? 'အပေါ်' : 'နောက်'} ရာသီ) — ပြည်သူ့ ဝန်/စီးပွား ဖိအား ကာလ မို့ နိုင်ငံ အဆင့် မှာ ဖြည်းဖြည်း ခိုင်ခိုင် သွား ရမယ့် အချိန် ဖြစ်တယ်။</p>`;
+  const era = currentEra(tree);
+  if (era) html += `<p class="line">ခေတ် ပြောင်း အခြေအနေ: ${PLANET_MM[era.maha]} မဟာ${era.antar ? ' / ' + PLANET_MM[era.antar] + ' အန္တရ' : ''} — ${domainsOfLord(p, era.maha).slice(0, 2).join('၊ ')} ဘက် အလေး ရ နေ တယ်။</p>`;
+  html += `</div>`;
+  // Layer 3: cycles — eclipses + Saturn ingress (12 months)
+  const cyc = cyclesNext12(c, p);
+  html += `<div class="card"><h2>🌘 စက်ဝန်း အလွှာ — လာမည့် ၁၂ လ အတွင်း ကြတ် နဲ့ စနေ ရာသီ ပြောင်း</h2>`;
+  if (!cyc.length) html += `<p class="line">ထင်ရှားတဲ့ ကြတ်/စနေ ပြောင်း မတွေ့ပါ။</p>`;
+  cyc.forEach(ev => { html += `<p class="line">${ev.icon} <b>${ev.date}</b> — ${ev.text}</p>`; });
+  html += `<p class="small">ကြတ် က မြင်ရတဲ့ ဒေသ မှာ ပို သက်ရောက် တယ်လို့ မူရင်း ဖတ်နည်း က ယူတယ် — ဒီမှာ က နိုင်ငံ လဂ် မှ ကျတဲ့ တန့် ရဲ့ နယ်ပယ် သတိ အဖြစ် သာ ပြထားတယ်။</p></div>`;
+  $('tab-transit').innerHTML = html;
+}
+const _cycCache = {};
+function cyclesNext12(c, p) {
+  const key = c.id + '|' + $('ayanSel').value;
+  if (_cycCache[key]) return _cycCache[key];
+  const ayan = $('ayanSel').value;
+  const lagSign = signOf(p.Lagna);
+  const out = [];
+  const dayMs = 86400000;
+  const start = Date.now();
+  const planetsAt = (ms) => calculateNASA_JPL_Planets(ms / dayMs + 2440587.5, c.lat, c.lon, ayan, 'mean');
+  const angDiff = (a, b) => { let d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; };
+  // eclipses: sample every 2 days
+  let prev = null;
+  for (let t = start; t < start + 370 * dayMs; t += 2 * dayMs) {
+    const q = planetsAt(t);
+    const elong = angDiff(q.Sun, q.Moon);
+    const nodeD = Math.min(angDiff(q.Moon, q.Rahu), angDiff(q.Moon, q.Ketu));
+    const score = Math.min(elong, Math.abs(180 - elong)) + nodeD * 0.3;
+    if (prev && prev.score > score && prev.score < 14) {
+      // refine around prev.t ± 2 days, 3h steps
+      let best = prev;
+      for (let rt = prev.t - 2 * dayMs; rt <= prev.t + 2 * dayMs; rt += 3 * 3600000) {
+        const r = planetsAt(rt);
+        const e2 = angDiff(r.Sun, r.Moon);
+        const sc2 = Math.min(e2, Math.abs(180 - e2)) + Math.min(angDiff(r.Moon, r.Rahu), angDiff(r.Moon, r.Ketu)) * 0.3;
+        if (sc2 < best.score) best = { t: rt, score: sc2, q: r, elong: e2 };
+      }
+      const isSolar = best.elong < 90;
+      const h = relHouse(signOf(best.q.Moon), lagSign);
+      const dstr = new Date(best.t).toISOString().slice(0, 10);
+      if (!out.some(e => Math.abs(new Date(e.date) - best.t) < 20 * dayMs)) {
+        out.push({ date: dstr, icon: isSolar ? '🌑' : '🌕', text: `${isSolar ? 'နေ ကြတ်' : 'လ ကြတ်'} — နိုင်ငံ လဂ် မှ ${h} တန့် (${DOMAINS[h - 1].name}) မှာ ကျတယ်။ အဲ့ နယ်ပယ် မှာ သတိ/အပြောင်းအလဲ အချက် ရှိ နိုင် တယ်။` });
+      }
+    }
+    prev = { t, score, q };
+  }
+  // Saturn sign changes: sample 10 days
+  let lastSign = signOf(planetsAt(start).Saturn);
+  for (let t = start + 10 * dayMs; t < start + 370 * dayMs; t += 10 * dayMs) {
+    const sg = signOf(planetsAt(t).Saturn);
+    if (sg !== lastSign) {
+      out.push({ date: new Date(t).toISOString().slice(0, 10) + ' ခန့်', icon: '🪐', text: `စနေ ${SIGN_MM[sg]} ရာသီ သို့ ပြောင်း — နိုင်ငံ လဂ် မှ ${relHouse(sg, lagSign)} တန့် (${DOMAINS[relHouse(sg, lagSign) - 1].name}) မှာ နှစ် နှစ်ခွဲ ခန့် ဖိအား/တည်ဆောက် ကာလ စ တယ်။` });
+      lastSign = sg;
+    }
+  }
+  out.sort((a, b) => (a.date < b.date ? -1 : 1));
+  _cycCache[key] = out;
+  return out;
+}
+
+// ---------- Tab 3: Annual ----------
+function findIngressJD(year, c) {
+  const ayan = $('ayanSel').value;
+  const sunLon = (jd) => calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean').Sun;
+  // scan Apr 8..20 for the 360->0 crossing
+  let jd0 = Date.UTC(year, 3, 8) / 86400000 + 2440587.5;
+  let prev = sunLon(jd0), prevJd = jd0;
+  for (let d = 1; d <= 13; d++) {
+    const jd = jd0 + d;
+    const cur = sunLon(jd);
+    if (prev > 350 && cur < 10) {
+      let lo = prevJd, hi = jd;
+      for (let i = 0; i < 42; i++) {
+        const mid = (lo + hi) / 2;
+        const v = sunLon(mid);
+        if (v > 350) lo = mid; else hi = mid;
+      }
+      return (lo + hi) / 2;
+    }
+    prev = cur; prevJd = jd;
+  }
+  return jd0 + 6;
+}
+function renderAnnual() {
+  const c = getCountry(state.country);
+  const year = state.year;
+  const jd = findIngressJD(year, c);
+  const ayan = $('ayanSel').value;
+  const ip = calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean');
+  const msUTC = (jd - 2440587.5) * 86400000;
+  const local = new Date(msUTC + c.tz * 3600000);
+  const wdLords = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+  const yearLord = wdLords[local.getUTCDay()];
+  const samva = SAMVA[(((year - 1987) % 60) + 60) % 60];
+  const lagSign = signOf(ip.Lagna);
+  let html = `<div class="card"><h2>📅 တစ်နှစ် အဟော — ${c.name} · ${year}</h2>
+    <p class="small">မိဿ ပြန် အခိုက် (နှစ် ဇာတာ အစ): ${new Date(msUTC).toISOString().slice(0, 16).replace('T', ' ')} UTC · နှစ် လဂ် ${SIGN_MM[lagSign]} · နှစ် အရှင် ${PLANET_MM[yearLord]} · နှစ် အမည် (၆၀ စက်ဝန်း): <b>${samva}</b></p>
+    <p class="line">နှစ် အရှင် က ${PLANET_MM[yearLord]} ဖြစ်လို့ ဒီနှစ် မှာ ${domainsOfLord(ip, yearLord).slice(0, 2).join('၊ ') || 'အခြေခံ နယ်ပယ်'} ဘက် က ရှေ့တန်း ရောက် လွှမ်း နေ မယ်။ နှစ် လဂ် ${SIGN_MM[lagSign]} ရဲ့ စရိုက် က နှစ် တစ်ခုလုံး ရဲ့ လေထု ကို ပေး တယ် — ${NATION_CHAR[lagSign].split('။')[0]}။</p></div>`;
+  html += `<div class="card"><h2>📊 ကဏ္ဍ အလိုက် နှစ်စဉ် အခြေအနေ</h2>`;
+  SECTORS.forEach(sec => {
+    let sum = 0;
+    sec.houses.forEach(h => { const a = assessDomain(ip, h); sum += a.grade === 'အားကောင်း' ? 2 : a.grade === 'အလယ်အလတ်' ? 1 : 0; });
+    const avg = sum / sec.houses.length;
+    const g = avg >= 1.6 ? 'good' : avg >= 0.8 ? 'mid' : 'bad';
+    const gLabel = g === 'good' ? 'အားကောင်း' : g === 'mid' ? 'အလယ်အလတ်' : 'ဂရုစိုက်';
+    html += `<p class="line"><b>${sec.name}</b> ${chip(gLabel)} — ${SECTOR_LINES[sec.key][g]}</p>`;
+  });
+  html += `<p class="small">ကဏ္ဍ အဆင့် သည် နှစ် ဇာတာ ရဲ့ သက်ဆိုင် တန့် အရှင် အား နဲ့ ရပ်ဂြိုဟ် တွေ အပေါ် အခြေခံ တဲ့ အကြမ်းဖျင်း ဖတ်ချက် ဖြစ်သည်။</p></div>`;
+  // ingress planet table
+  html += `<div class="card"><h2>🪐 နှစ် ဇာတာ ဂြိုဟ် တည်နေရာ</h2><table><tr><th>ဂြိုဟ်</th><th>ရာသီ</th><th>တန့်</th></tr>`;
+  ['Lagna'].concat(PLANETS).forEach(pl => { html += `<tr><td>${PLANET_MM[pl]}</td><td>${SIGN_MM[signOf(ip[pl])]}</td><td>${pl === 'Lagna' ? 1 : _planetHouse(ip, pl)}</td></tr>`; });
+  html += `</table></div>`;
+  $('tab-annual').innerHTML = html;
+}
+
+// ---------- Tab 4: Priority ----------
+function renderPriority() {
+  const c = getCountry(state.country);
+  const { p, tree } = chartOf(c);
+  const tp = transitNow(c);
+  const lagSign = signOf(p.Lagna);
+  const era = currentEra(tree);
+  const scored = DOMAINS.map(d => {
+    const a = assessDomain(p, d.h);
+    let sc = a.st * 0.3;
+    const why = [];
+    if (era) {
+      if (_lordOfHouse(p, d.h) === era.maha) { sc += 22; why.push(`${PLANET_MM[era.maha]} မဟာ ခေတ် က ဒီ တန့် အရှင် ကိုယ်တိုင်`); }
+      if (era.antar && _lordOfHouse(p, d.h) === era.antar) { sc += 14; why.push(`အန္တရ ${PLANET_MM[era.antar]} ဆက် နေ`); }
+    }
+    const jupH = relHouse(signOf(tp.Jupiter), lagSign), satH = relHouse(signOf(tp.Saturn), lagSign), rahH = relHouse(signOf(tp.Rahu), lagSign);
+    if (jupH === d.h) { sc += 12; why.push('ကြာသပတေး ကောဇာ ထောက် ထား'); }
+    if (satH === d.h) { sc += 5; why.push('စနေ ကောဇာ — အားစိုက် တည်ဆောက် ရမယ့် နယ်ပယ်'); }
+    if (rahH === d.h) { sc -= 8; why.push('ရာဟု ကောဇာ — အပြောင်းအလဲ/မတည်ငြိမ် သတိ'); }
+    return { d, sc: Math.round(sc), why, a };
+  }).sort((x, y) => y.sc - x.sc);
+  let html = `<div class="card"><h2>🧭 ဦးစားပေး ရွေးချယ်မှု — ${c.name} (လက်ရှိ ကာလ)</h2>
+    <p class="small">မွေးဇာတာ အခြေခံ အား + လက်ရှိ ဒဿာ ခေတ် + ကောဇာ သုံးလွှာ ချိန် ထားတဲ့ နယ်ပယ် အဆင့် ဖြစ်သည်။</p>
+    <h3>✅ ဦးစားပေး သင့်ဆုံး နယ်ပယ်</h3>`;
+  scored.slice(0, 3).forEach((r, i) => {
+    html += `<p class="line"><b>${i + 1}. ${r.d.name}</b> <span class="chip g-info">အမှတ် ${r.sc}</span> — ${r.why.length ? r.why.join(' · ') : 'အခြေခံ အား ကောင်း'}။ ဒီ ကာလ မှာ ဒီ နယ်ပယ် ကို အားဖြည့် လုပ်ရင် အကျိုး အများ ဆုံး ရ မယ်။</p>`;
+  });
+  html += `<h3>⚠️ သတိထား စောင့်ကြည့် ရမယ့် နယ်ပယ်</h3>`;
+  scored.slice(-2).forEach(r => {
+    html += `<p class="line"><b>${r.d.name}</b> ${chip(r.a.grade)} — ${r.why.length ? r.why.join(' · ') : 'အခြေခံ အား နည်း'}။ အလွန် တိုး လုပ် တာထက် ထိန်းသိမ်း/ပြင်ဆင် ဘက် ဦးစား ပေး သင့် တယ်။</p>`;
+  });
+  html += `</div>`;
+  $('tab-priority').innerHTML = html;
+}
+
+// ---------- Tab 5: Relate ----------
+function relateScore(a, b) {
+  const A = chartOf(a), B = chartOf(b);
+  const pa = A.p, pb = B.p;
+  const lines = [];
+  let scoreA = 0, scoreB = 0, coop = 0;
+  const am = signOf(pa.Moon), bm = signOf(pb.Moon);
+  const dist = ((bm - am + 12) % 12) + 1;
+  if ([1, 5, 9].includes(dist)) { coop += 2; lines.push(`လ ရာသီ ဆက်ဆံရေး: ${dist} ခု မြောက် — ကံ/စိတ် ညီ တဲ့ အချက် ရှိ (တြိကောဏ ဆက်)။`); }
+  else if (dist === 7) { coop += 1; lines.push('လ ရာသီ ဆန့်ကျင် ဘက် (၇ ခု) — မိတ်ဖက် ဆက် နိုင် ပေမယ့် အမြင် ကွဲ လည်း ဖြစ်လွယ်။'); }
+  else if ([6, 8, 12].includes(dist)) { coop -= 2; lines.push(`လ ရာသီ ဆက်ဆံရေး: ${dist} ခု မြောက် — တင်းမာ အချက် (၆/၈/၁၂ ဆက်)၊ စေ့စပ် မှာ အားစိုက် ရမယ်။`); }
+  else lines.push(`လ ရာသီ ဆက်ဆံရေး: ${dist} ခု မြောက် — အလယ်အလတ် ဆက်။`);
+  const a7inB = _planetHouse(pb, _lordOfHouse(pa, 7));
+  if ([1, 4, 5, 7, 9, 10, 11].includes(a7inB)) { coop += 2; lines.push(`${a.name.split('·')[0].trim()} ရဲ့ ဆက်ဆံရေး တန့် အရှင် က ${b.name.split('·')[0].trim()} ဇာတာ မှာ ကောင်း တဲ့ တန့် (${a7inB}) မှာ — မိတ်ဖက် အကျိုး ရ အချက်။`); }
+  const b7inA = _planetHouse(pa, _lordOfHouse(pb, 7));
+  if ([1, 4, 5, 7, 9, 10, 11].includes(b7inA)) { coop += 2; lines.push(`ပြောင်းပြန် ဆက် လည်း အလားတူ ထောက် ထား တယ် (${b7inA} တန့်) — အပြန် အလှန် အကျိုး ရှိ။`); }
+  const compA = Math.round(((typeof _planetStrength(pa, _lordOfHouse(pa, 1)) === 'number' ? _planetStrength(pa, _lordOfHouse(pa, 1)) : 50) + (typeof _planetStrength(pa, _lordOfHouse(pa, 10)) === 'number' ? _planetStrength(pa, _lordOfHouse(pa, 10)) : 50)) / 2);
+  const compB = Math.round(((typeof _planetStrength(pb, _lordOfHouse(pb, 1)) === 'number' ? _planetStrength(pb, _lordOfHouse(pb, 1)) : 50) + (typeof _planetStrength(pb, _lordOfHouse(pb, 10)) === 'number' ? _planetStrength(pb, _lordOfHouse(pb, 10)) : 50)) / 2);
+  scoreA = compA; scoreB = compB;
+  lines.push(`အခြေခံ အား နှိုင်း: ${a.name.split('·')[0].trim()} ${compA} · ${b.name.split('·')[0].trim()} ${compB} — ${compA === compB ? 'တန်း တူ' : (compA > compB ? a.name.split('·')[0].trim() : b.name.split('·')[0].trim()) + ' ဘက် အခြေခံ အသာ ရှိ'}။`);
+  const eraA = currentEra(A.tree), eraB = currentEra(B.tree);
+  if (eraA && eraB) lines.push(`ခေတ် အခြေအနေ: ${a.name.split('·')[0].trim()} ${PLANET_MM[eraA.maha]} ခေတ် · ${b.name.split('·')[0].trim()} ${PLANET_MM[eraB.maha]} ခေတ် — နှစ်ဖက် လုံး ရဲ့ ခေတ် အရှင် တွေ ကိုယ့် ဇာတာ မှာ ကောင်း တဲ့ တန့် ပိုင် ရင် ပူးပေါင်း ကာလ ကောင်း တယ်။`);
+  return { lines, coop, compA, compB };
+}
+function renderRelate() {
+  const a = getCountry(state.country);
+  const b = getCountry(state.countryB);
+  const r = relateScore(a, b);
+  const verdict = r.coop >= 3 ? '🤝 ပူးပေါင်း အကျိုး များ တဲ့ ဆက်ဆံရေး ပုံစံ' : r.coop >= 0 ? '🤝 အလယ်အလတ် — ညှိနှိုင်း ရင် အကျိုး ရ တဲ့ ဆက်' : '⚠️ တင်းမာ အချက် များ — စေ့စပ် မှာ သတိ/အချိန် လို တဲ့ ဆက်';
+  let html = `<div class="card"><h2>🤝 နိုင်ငံ ပေါင်းသင်း — ${a.name} × ${b.name}</h2>
+    <p class="line"><b>${verdict}</b></p>
+    <p><label class="small">နှိုင်းမည့် နိုင်ငံ: </label><select id="countryB"></select></p>`;
+  r.lines.forEach(l => { html += `<p class="line">• ${l}</p>`; });
+  html += `<p class="small">ဒါ အကြမ်းဖျင်း နှိုင်းယှဉ်ချက် သာ ဖြစ်သည် — လက်တွေ့ ဆက်ဆံရေး သည် သမိုင်း/ပထဝီ/စီးပွား အချက် တွေ အပေါ် လည်း မူတည် သည်။</p></div>`;
+  $('tab-relate').innerHTML = html;
+  const sel = $('countryB');
+  allCountries().forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; if (c.id === state.countryB) o.selected = true; sel.appendChild(o); });
+  sel.onchange = () => { state.countryB = sel.value; renderRelate(); };
+}
+
+// ---------- state & init ----------
+const state = { country: 'mm', countryB: 'th', year: new Date().getFullYear(), tab: 'profile' };
+function fillCountrySelect() {
+  const sel = $('countrySel');
+  sel.innerHTML = '';
+  allCountries().forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; if (c.id === state.country) o.selected = true; sel.appendChild(o); });
+  const c = getCountry(state.country);
+  $('foundInfo').textContent = `${c.date} ${c.time} · ${c.city} · ${c.basis}`;
+}
+function renderAll() {
+  fillCountrySelect();
+  renderProfile(); renderTransit(); renderAnnual(); renderPriority(); renderRelate();
+}
+$('countrySel').onchange = () => { state.country = $('countrySel').value; if (state.countryB === state.country) state.countryB = state.country === 'mm' ? 'th' : 'mm'; renderAll(); };
+$('ayanSel').onchange = () => { renderAll(); };
+document.querySelectorAll('#tabNav .tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#tabNav .tab').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    state.tab = btn.dataset.tab;
+    ['profile', 'transit', 'annual', 'priority', 'relate'].forEach(t => { $('tab-' + t).style.display = t === state.tab ? '' : 'none'; });
+    if (state.tab === 'annual' && !$('yearRow')) {
+      const sec = $('tab-annual');
+      const div = document.createElement('div');
+      div.className = 'card'; div.id = 'yearRow';
+      div.innerHTML = `<label class="small">နှစ်: </label><input type="number" id="yearInp" value="${state.year}" style="width:100px"> <button class="act" id="yearGo">ကြည့်မယ်</button>`;
+      sec.prepend(div);
+      $('yearGo').onclick = () => { state.year = parseInt($('yearInp').value, 10) || state.year; renderAnnual(); const yr = $('yearInp'); if (yr) yr.value = state.year; };
+    }
+  };
+});
+$('ncAdd').onclick = () => {
+  const name = $('ncName').value.trim(), date = $('ncDate').value, time = $('ncTime').value || '12:00';
+  const lat = parseFloat($('ncLat').value), lon = parseFloat($('ncLon').value), tz = parseFloat($('ncTz').value);
+  if (!name || !date || isNaN(lat) || isNaN(lon) || isNaN(tz)) { alert('အမည်/ရက်/Lat/Lon/TZ ပြည့်စုံ ထည့်ပါ'); return; }
+  const list = customCountries();
+  const id = 'cu' + Date.now();
+  list.push({ id, name, date, time, city: $('ncCity').value.trim() || '—', lat, lon, tz, basis: $('ncBasis').value.trim() || 'ကိုယ်တိုင် သတ်မှတ်' });
+  localStorage.setItem('medini_custom', JSON.stringify(list));
+  state.country = id;
+  renderAll();
+};
+renderAll();
+</script>
+</body>
+</html>
