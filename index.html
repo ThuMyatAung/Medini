@@ -90,6 +90,20 @@
 window.addEventListener('error', function (e) { var d = document.getElementById('bootErr'); if (d) { d.style.display = 'block'; d.textContent = '⚠️ app error: ' + (e.message || 'unknown') + ' — screenshot ရိုက် ပို့ ပေး ပါ'; } });
 </script>
 <script>
+window.__log = [];
+function __ck(name, extra) {
+  window.__log.push(name);
+  var d = document.getElementById('probeLog');
+  if (d) d.innerHTML += '<div>✅ ' + name + (extra ? ' — ' + extra : '') + '</div>';
+}
+window.addEventListener('error', function (e) {
+  var d = document.getElementById('probeLog');
+  if (d) d.innerHTML += '<div style="color:#b91c1c">⚠️ ERROR: ' + (e.message || '?') + ' @line ' + (e.lineno || '?') + '</div>';
+});
+</script>
+<div id="probeLog" style="margin:10px 14px;padding:10px 12px;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;font-size:13px;line-height:1.9"><b>🔬 PROBE — script အဆင့် စစ် ဆေး ချက်</b></div>
+<script>__ck('script0 (log system) run');</script>
+<script>
 const NATURAL_RELATIONS = {
       Sun: { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn'], neutral: ['Mercury'] },
       Moon: { friends: ['Sun', 'Mercury'], enemies: [], neutral: ['Mars', 'Jupiter', 'Venus', 'Saturn'] },
@@ -384,6 +398,10 @@ function _lordOfHouse(p, h) {
     }
 
 function _jdFromDate(d, tz){ return getJulianDay(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), (tz == null || isNaN(tz)) ? 6.5 : tz); }
+
+</script>
+<script>__ck("1/5 engine.js");</script>
+<script>
 // ================= Medini (Mundane) app =================
 const SIGN_MM = ['မိဿ', 'ပြိဿ', 'မေထုန်', 'ကရကဋ်', 'သိဟ်', 'ကန်', 'တူ', 'ဗြိစ္ဆာ', 'ဓနု', 'မကာရ', 'ကုံ', 'မိန်'];
 const PLANETS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
@@ -545,6 +563,9 @@ function assessDomain(p, h) {
   st = Math.max(3, Math.min(97, Math.round(st)));
   return { lord, st, grade: gradeOf(st) };
 }
+</script>
+<script>__ck("2/5 app1 first half");</script>
+<script>
 function currentEra(tree) {
   const nowStr = new Date().toISOString().slice(0, 10);
   for (const m of tree) {
@@ -694,6 +715,10 @@ function cyclesNext12(c, p) {
   _cycCache[key] = out;
   return out;
 }
+
+</script>
+<script>__ck("3/5 app1 second half");</script>
+<script>
 
 // ---------- Tab 3: Annual ----------
 function findIngressJD(year, c, target, approxUtcMs) {
@@ -887,6 +912,9 @@ function renderPriority() {
   $('tab-priority').innerHTML = html;
 }
 
+</script>
+<script>__ck("4/5 app2 first half");</script>
+<script>
 // ---------- Tab 5: Relate ----------
 function relateScore(a, b) {
   const A = chartOf(a), B = chartOf(b);
@@ -1018,3 +1046,9 @@ $('ncAdd').onclick = () => {
 };
 renderAll();
 if ($('bootStatus')) $('bootStatus').textContent = '✓ app အဆင် သင့် (v3) — နိုင်ငံ ' + allCountries().length + ' ခု ပါတယ်';
+
+</script>
+<script>__ck("5/5 app2 second half");</script>
+<script>__ck("ALL BLOCKS DONE", document.querySelectorAll("#countrySel option").length + " countries in select");</script>
+</body>
+</html>
