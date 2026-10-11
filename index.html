@@ -49,6 +49,7 @@
   <label class="small">နိုင်ငံ:</label>
   <select id="countrySel"></select>
   <span id="foundInfo" class="small"></span>
+  <span id="altRow"></span>
   <label class="small">Ayanamsa:</label>
   <select id="ayanSel"><option value="lahiri">Lahiri</option><option value="kp">KP</option><option value="raman">Raman</option></select>
 </div>
@@ -83,6 +84,11 @@
   </div>
 </main>
 <p class="foot">မွေးချိန် အခြေခံ များ ကို ပွင့်လင်းစွာ ပြထားပြီး ပြင်လို့ ရသည် — နိုင်ငံ မွေးချိန် သည် အငြင်းပွား ရသည့် အချက် ဖြစ်နိုင်သည်။ အဟော များသည် အကြမ်းဖျင်း ဖတ်နည်း သာ ဖြစ်သည်။</p>
+<div id="bootStatus" class="small" style="padding:4px 14px;color:#6d28d9">⏳ app ဖွင့် နေ တယ်… (ဒီ စာသား အကြာကြီး မပြောင်း ရင် ဒီ viewer မှာ script မ run လို့ ပါ — Safari မှာ ဖွင့် ပါ/သို့ GitHub တင် ဖွင့် ပါ)</div>
+<div id="bootErr" style="display:none;padding:6px 14px;color:#b91c1c;font-size:12px"></div>
+<script>
+window.addEventListener('error', function (e) { var d = document.getElementById('bootErr'); if (d) { d.style.display = 'block'; d.textContent = '⚠️ app error: ' + (e.message || 'unknown') + ' — screenshot ရိုက် ပို့ ပေး ပါ'; } });
+</script>
 <script>
 const NATURAL_RELATIONS = {
       Sun: { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn'], neutral: ['Mercury'] },
@@ -393,8 +399,44 @@ const COUNTRIES = [
   { id: 'cn', name: 'တရုတ် · China', date: '1949-10-01', time: '15:00', city: 'ပေကျင်း', lat: 39.90, lon: 116.40, tz: 8, basis: 'PRC ကြေညာချိန်' },
   { id: 'jp', name: 'ဂျပန် · Japan', date: '1952-04-28', time: '22:30', city: 'တိုကျို', lat: 35.68, lon: 139.69, tz: 9, basis: 'အချုပ်အခြာ ပြန်လည် ရချိန်' },
   { id: 'us', name: 'အမေရိကန် · USA', date: '1776-07-04', time: '17:10', city: 'Philadelphia', lat: 39.95, lon: -75.16, tz: -5, basis: 'လွတ်လပ်ရေး ကြေညာစာတမ်း (Sibly)' },
-  { id: 'uk', name: 'ဗြိတိန် · UK', date: '1801-01-01', time: '00:00', city: 'လန်ဒန်', lat: 51.50, lon: -0.12, tz: 0, basis: 'Union ခေတ် အစ' }
+  { id: 'uk', name: 'ဗြိတိန် · UK', date: '1801-01-01', time: '00:00', city: 'လန်ဒန်', lat: 51.50, lon: -0.12, tz: 0, basis: 'Union ခေတ် အစ' },
+  { id: 'vn', name: 'ဗီယက်နမ် · Vietnam', date: '1945-09-02', time: '14:00', city: 'ဟနွိုင်း', lat: 21.03, lon: 105.85, tz: 7, basis: 'လွတ်လပ်ရေး ကြေညာစာ ဖတ်ချိန်', region: 'sea' },
+  { id: 'id', name: 'အင်ဒိုနီးရှား · Indonesia', date: '1945-08-17', time: '10:00', city: 'ဂျကာတာ', lat: -6.21, lon: 106.85, tz: 7, basis: 'လွတ်လပ်ရေး ကြေညာချိန်', region: 'sea' },
+  { id: 'my', name: 'မလေးရှား · Malaysia', date: '1957-08-31', time: '09:30', city: 'ကွာလာလမ်ပူ', lat: 3.14, lon: 101.69, tz: 7.5, basis: 'Merdeka ကြေညာချိန်', region: 'sea' },
+  { id: 'ph', name: 'ဖိလစ်ပိုင် · Philippines', date: '1946-07-04', time: '09:15', city: 'မနီလာ', lat: 14.60, lon: 120.98, tz: 8, basis: 'လွတ်လပ်ရေး ရယူချိန်', region: 'sea' },
+  { id: 'kh', name: 'ကမ္ဘောဒီးယား · Cambodia', date: '1953-11-09', time: '08:00', city: 'ဖနွမ်းပင်', lat: 11.54, lon: 104.89, tz: 7, basis: 'လွတ်လပ်ရေးနေ့ (အချိန် ခန့်မှန်း)', region: 'sea' },
+  { id: 'la', name: 'လာအို · Laos', date: '1953-10-22', time: '09:00', city: 'ဗီယင်ကျိန်း', lat: 17.98, lon: 102.63, tz: 7, basis: 'လွတ်လပ်ရေး ရယူနေ့ (အချိန် ခန့်မှန်း)', region: 'sea' },
+  { id: 'kr', name: 'တောင်ကိုရီးယား · South Korea', date: '1948-08-15', time: '11:00', city: 'ဆိုးလ်', lat: 37.57, lon: 126.98, tz: 9, basis: 'အစိုးရ ဖွဲ့ ကြေညာပွဲ', region: 'asia' },
+  { id: 'tw', name: 'ထိုင်ဝမ် · Taiwan (ROC)', date: '1912-01-01', time: '00:00', city: 'နန်ကျင်း', lat: 32.06, lon: 118.80, tz: 8, basis: 'ROC တည်ထောင်နေ့ (အချိန် ခန့်မှန်း)', region: 'asia' },
+  { id: 'bd', name: 'ဘင်္ဂလားဒေ့ရှ် · Bangladesh', date: '1971-12-16', time: '17:00', city: 'ဒါကာ', lat: 23.81, lon: 90.41, tz: 6, basis: 'အောင်ပွဲနေ့ ဝန်းကျင်', region: 'asia' },
+  { id: 'lk', name: 'သီရိလင်္ကာ · Sri Lanka', date: '1948-02-04', time: '07:30', city: 'ကိုလံဘို', lat: 6.93, lon: 79.86, tz: 5.5, basis: 'လွတ်လပ်ရေးပွဲ မနက်', region: 'asia' },
+  { id: 'np', name: 'နီပေါ · Nepal', date: '2008-05-28', time: '23:26', city: 'ခတ္တမန္ဒု', lat: 27.72, lon: 85.32, tz: 5.75, basis: 'သမ္မတနိုင်ငံ ကြေညာချိန်', region: 'asia' },
+  { id: 'de', name: 'ဂျာမနီ · Germany', date: '1949-05-23', time: '17:00', city: 'ဘွန်း', lat: 50.74, lon: 7.10, tz: 1, basis: 'အခြေခံဥပဒေ ကြေညာချိန်', region: 'europe' },
+  { id: 'fr', name: 'ပြင်သစ် · France', date: '1958-10-04', time: '00:00', city: 'ပါရီ', lat: 48.86, lon: 2.35, tz: 1, basis: 'ပဉ္စမ သမ္မတနိုင်ငံ ဖွဲ့စည်းပုံ', region: 'europe' },
+  { id: 'it', name: 'အီတလီ · Italy', date: '1946-06-10', time: '18:00', city: 'ရောမ', lat: 41.90, lon: 12.50, tz: 2, basis: 'သမ္မတနိုင်ငံ ကြေညာချိန်', region: 'europe' },
+  { id: 'es', name: 'စပိန် · Spain', date: '1978-12-29', time: '00:00', city: 'မက်ဒရစ်', lat: 40.42, lon: -3.70, tz: 1, basis: 'ဖွဲ့စည်းပုံ အသက်ဝင်နေ့', region: 'europe' },
+  { id: 'ca', name: 'ကနေဒါ · Canada', date: '1867-07-01', time: '00:00', city: 'အိုတာဝါ', lat: 45.42, lon: -75.70, tz: -5, basis: 'Confederation နေ့', region: 'namerica' },
+  { id: 'mx', name: 'မက္ကဆီကို · Mexico', date: '1810-09-15', time: '23:00', city: 'Dolores', lat: 21.16, lon: -100.93, tz: -6, basis: 'Grito de Dolores (အချိန် ခန့်မှန်း)', region: 'samerica' },
+  { id: 'br', name: 'ဘရာဇီး · Brazil', date: '1822-09-07', time: '16:30', city: 'ဆောပေါ်လို', lat: -23.55, lon: -46.63, tz: -3, basis: 'Ipiranga ကြေညာချိန်', region: 'samerica' },
+  { id: 'ae', name: 'အာရပ်စော်ဘွား · UAE', date: '1971-12-02', time: '11:00', city: 'အဘူဒါဘီ', lat: 24.45, lon: 54.38, tz: 4, basis: 'ပြည်ထောင်စု တည်ထောင် (အချိန် ခန့်မှန်း)', region: 'mena' },
+  { id: 'qa', name: 'ကာတာ · Qatar', date: '1971-09-03', time: '09:00', city: 'ဒိုဟာ', lat: 25.29, lon: 51.53, tz: 3, basis: 'လွတ်လပ်ရေးနေ့ (အချိန် ခန့်မှန်း)', region: 'mena' },
+  { id: 'sa', name: 'ဆော်ဒီ · Saudi Arabia', date: '1932-09-23', time: '00:00', city: 'ရီယတ်', lat: 24.71, lon: 46.68, tz: 3, basis: 'နိုင်ငံ ပေါင်းစည်း ကြေညာ', region: 'mena' },
+  { id: 'au', name: 'ဩစတြေးလျ · Australia', date: '1901-01-01', time: '12:00', city: 'ဆစ်ဒနီ', lat: -33.87, lon: 151.21, tz: 10, basis: 'Federation ကြေညာပွဲ (အချိန် ခန့်မှန်း)', region: 'oceania' }
 ];
+const REGION_LABELS = { sea: 'အရှေ့တောင်အာရှ', asia: 'အာရှ', mena: 'အရှေ့အလယ်ပိုင်း', europe: 'ဥရောပ', namerica: 'မြောက်အမေရိက', samerica: 'တောင်အမေရိက', oceania: 'သမုဒ္ဒရာ ဒေသ', custom: 'ကိုယ်တိုင် ထည့်ထား' };
+COUNTRIES.forEach(c => { if (!c.region) c.region = { mm: 'sea', th: 'sea', sg: 'sea', in: 'asia', cn: 'asia', jp: 'asia', us: 'namerica', uk: 'europe' }[c.id] || 'asia'; });
+// founding-moment alternatives (contested charts)
+const ALT_MOMENTS = {
+  in: [{ label: 'သမ္မတနိုင်ငံ ဇာတာ (1950)', date: '1950-01-26', time: '10:18' }],
+  us: [{ label: 'လက်မှတ်ထိုး ချိန် ယူဆ (14:47)', date: '1776-07-04', time: '14:47' }],
+  jp: [{ label: 'ဖွဲ့စည်းပုံ အသက်ဝင် (1947)', date: '1947-05-03', time: '00:00' }]
+};
+const ALT_SEL = {};
+function momentOf(c) {
+  const idx = ALT_SEL[c.id];
+  if (idx != null && idx >= 0 && ALT_MOMENTS[c.id] && ALT_MOMENTS[c.id][idx]) { const a = ALT_MOMENTS[c.id][idx]; return { date: a.date, time: a.time, label: a.label }; }
+  return { date: c.date, time: c.time, label: null };
+}
 const DOMAINS = [
   { h: 1, name: 'ပြည်သူ / နိုင်ငံ့ အခြေခံ' }, { h: 2, name: 'ဘဏ္ဍာ / စီးပွား' }, { h: 3, name: 'ဆက်သွယ် / သယ်ယူ / အိမ်နီးချင်း' },
   { h: 4, name: 'မြေ / စိုက်ပျိုး / ပြည်သူ့ နေ အိမ်' }, { h: 5, name: 'အနုပညာ / အားကစား / မျိုးဆက်' }, { h: 6, name: 'ကျန်းမာ / အလုပ်သမား / အကြွေး' },
@@ -423,6 +465,20 @@ const MOOD = [
   'ပြည်သူ့ စိတ် က ယုံကြည် မှု/မျှော်လင့်ချက် ဘက် သွား ပြီး ဆရာ/အယူ ကို အားကိုး တယ်', 'ပြည်သူ့ စိတ် က လက်တွေ့ ဆန် ပြီး အဖွဲ့အစည်း ကို ယုံကြည် မှု က စွမ်းဆောင်ရည် အပေါ် မူတည် တယ်',
   'ပြည်သူ့ စိတ် က လူထု/အဖွဲ့ လှုပ်ရှား မှု ဘက် ပါဝင် လွယ် ပြီး ဆန်းသစ် မှု ကို လက်ခံ တယ်', 'ပြည်သူ့ စိတ် က နူးညံ့ ပြီး ဘာသာရေး/ကရုဏာ ဘက် ယိုင် တယ်၊ ခံစား လွယ် ဆုံး ပုံစံ ပဲ'
 ];
+const DOMAIN_DETAIL = {
+  1: { good: 'ပြည်သူ့ အခြေခံ ခိုင် ပြီး နိုင်ငံ့ ခံနိုင်ရည် ကောင်း တယ်။', mid: 'ပြည်သူ့ အခြေခံ အလယ်အလတ် — ခေတ် အလိုက် အတက် အကျ ရှိ တယ်။', bad: 'ပြည်သူ့ အခြေခံ ပျော့ — လူထု ယုံကြည် မှု တည် ဆောက် မှု က အမြဲ လို နေ တယ်။' },
+  2: { good: 'ဘဏ္ဍာ အခြေခံ ကျယ် ပြီး ဝင်ငွေ လမ်းကြောင်း စုံ တယ်။', mid: 'ဘဏ္ဍာ က အလယ်အလတ် — ဝင်ငွေ ရှိ ပေမယ့် ထိန်း သိမ်း မှု လို တယ်။', bad: 'ဘဏ္ဍာ ဖိအား များ လွယ် — အကြွေး/အရံ ကိစ္စ သတိ ထား ရ မယ့် ပုံစံ။' },
+  3: { good: 'ဆက်သွယ်/သယ်ယူ/မီဒီယာ အား ကောင်း ပြီး အိမ်နီးချင်း ဆက်ဆံ ရ လွယ် တယ်။', mid: 'ဆက်သွယ် နယ်ပယ် ပုံမှန် — လမ်းကြောင်း ပြုပြင် မှု အခါခါ လို တယ်။', bad: 'ဆက်သွယ်/အိမ်နီးချင်း ဘက် ပွတ်တိုက် မှု ဖြစ် လွယ် တဲ့ ပုံစံ။' },
+  4: { good: 'မြေ/စိုက်ပျိုး အခြေခံ ကောင်း ပြီး ပြည်သူ့ နေ အိမ် တည်ငြိမ် တယ်။', mid: 'မြေ/စိုက်ပျိုး အလယ်အလတ် — ရာသီ အလိုက် ကွာ တယ်။', bad: 'မြေ/စိုက်ပျိုး ဘက် ထိခိုက် လွယ် — စားနပ်ရိက္ခာ လုံခြုံ မှု ကြို ပြင် သင့် တဲ့ ပုံစံ။' },
+  5: { good: 'အနုပညာ/အားကစား/မျိုးဆက် နယ်ပယ် စည် ကား ပြီး ဖန်တီး အား ကောင်း တယ်။', mid: 'အနုပညာ နယ်ပယ် ပုံမှန် — ပေါ်လွင် တဲ့ ခေတ် နဲ့ မှိန် တဲ့ ခေတ် လှည့် တယ်။', bad: 'မျိုးဆက်/အနုပညာ နယ်ပယ် မှာ အငြင်းပွား/ကန့်သတ် မှု ကြုံ လွယ် တယ်။' },
+  6: { good: 'ကျန်းမာ/အလုပ် စနစ် ခံနိုင်ရည် ကောင်း ပြီး အကြွေး ထိန်း နိုင် တယ်။', mid: 'ကျန်းမာ/အလုပ် စနစ် အလယ်အလတ် — ပြုပြင် မှု ဆက် လို တယ်။', bad: 'ကျန်းမာ/အကြွေး ဖိအား စု လွယ် — စနစ် အားနည်း ရင် ကပ် အဖြစ် ပေါ် တတ် တယ်။' },
+  7: { good: 'နိုင်ငံခြား ဆက်ဆံရေး ပွင့် ပြီး မိတ်ဖက် အကျိုး ရ လွယ် တယ်။', mid: 'နိုင်ငံခြား ဆက်ဆံ အလယ်အလတ် — တစ်ဖက် ချင်း ညှိ ရတဲ့ ပုံစံ။', bad: 'နိုင်ငံခြား ဘက် ပဋိပက္ခ/ဖိအား ကြုံ လွယ် — စေ့စပ် ကျွမ်းကျင် မှု လို တယ်။' },
+  8: { good: 'အကျပ် ကိုင်တွယ် နိုင်အား ရှိ ပြီး ဘေး ကြုံ ရင် ပြန် ထ နိုင် တယ်။', mid: 'အကျပ် ကိုင်တွယ် မှု အလယ်အလတ် — ပြင်ဆင် မှု အပေါ် မူတည် တယ်။', bad: 'အစုလိုက် ဘေး ထိခိုက် လွယ် ဆုံး နယ်ပယ် — ကြိုတင် ပြင်ဆင် က အသက် ပဲ။' },
+  9: { good: 'ဘာသာရေး/တရား/ပညာ အမြင့် တည်ငြိမ် ပြီး လမ်းပြ အင်အား ရှိ တယ်။', mid: 'ဘာသာ/ပညာ အမြင့် အလယ်အလတ် — အယူ မျိုး စုံ ညှိ နေ ရ တယ်။', bad: 'ဘာသာရေး/တရား နယ်ပယ် အငြင်းပွား ဖြစ် လွယ် တဲ့ ပုံစံ။' },
+  10: { good: 'အစိုးရ/အုပ်ချုပ်ရေး အခြေခံ ခိုင် ပြီး အမိန့် စီးဆင်း ကောင်း တယ်။', mid: 'အုပ်ချုပ်ရေး အလယ်အလတ် — ခေါင်းဆောင် အလိုက် အရည်အသွေး ကွာ တယ်။', bad: 'အုပ်ချုပ်ရေး မတည်ငြိမ် လွယ် — အာဏာ အပြောင်းအလဲ ဖိအား ပြန် ဖြစ် တတ် တယ်။' },
+  11: { good: 'မဟာမိတ်/လွှတ်တော် လမ်းကြောင်း ပွင့် ပြီး အထောက်အပံ့ ရ လွယ် တယ်။', mid: 'မဟာမိတ် ဆက်ဆံ ပုံမှန် — ပေး/ယူ ညှိ နေ ရ တယ်။', bad: 'မဟာမိတ် အထောက်အပံ့ မမှန် — ကိုယ့် အား ကိုယ် ကိုး ရ တဲ့ ပုံစံ။' },
+  12: { good: 'ဆုံးရှုံး ထိန်း နိုင် ပြီး နိုင်ငံခြား အသုံးစရိတ် စီမံ တတ် တယ်။', mid: 'အသုံးစရိတ် အလယ်အလတ် — စစ် ဆေး စနစ် လို တယ်။', bad: 'ဆုံးရှုံး/အသုံးစရိတ် ယိုစိမ့် လွယ် — ပွင့်လင်း စနစ် မရှိ ရင် ကြီး သွား တတ် တယ်။' }
+};
 const SAMVA = ['Prabhava', 'Vibhava', 'Shukla', 'Pramoduta', 'Prajothpatti', 'Angirasa', 'Shrimukha', 'Bhava', 'Yuva', 'Dhata', 'Eshvara', 'Bahudhanya', 'Pramadi', 'Vikrama', 'Vrisha', 'Chitrabhanu', 'Subhanu', 'Tarana', 'Parthiva', 'Vyaya', 'Sarvajit', 'Sarvadhari', 'Virodhi', 'Vikruti', 'Khara', 'Nandana', 'Vijaya', 'Jaya', 'Manmatha', 'Durmukhi', 'Hevilambi', 'Vilambi', 'Vikari', 'Sarvari', 'Plava', 'Subhakrut', 'Shobhakrut', 'Krodhi', 'Visvavasu', 'Parabhava', 'Plavanga', 'Keelaka', 'Saumya', 'Sadharana', 'Virodhakrut', 'Paridhavi', 'Pramadicha', 'Ananda', 'Rakshasa', 'Anala', 'Pingala', 'Kalayukti', 'Siddharthi', 'Raudra', 'Durmati', 'Dundubhi', 'Rudhirodgari', 'Rakthakshi', 'Krodhana', 'Akshaya'];
 const SECTORS = [
   { key: 'econ', name: '💰 စီးပွား / ဘဏ္ဍာ', houses: [2, 11] },
@@ -456,10 +512,11 @@ function getCountry(id) { return allCountries().find(c => c.id === id) || COUNTR
 const chartCache = {};
 function chartOf(c) {
   const ayan = $('ayanSel').value;
-  const key = c.id + '|' + ayan;
+  const key = c.id + '|' + ayan + '|' + (ALT_SEL[c.id] == null ? -1 : ALT_SEL[c.id]);
   if (chartCache[key]) return chartCache[key];
-  const [y, m, d] = c.date.split('-').map(Number);
-  const [hh, mm] = c.time.split(':').map(Number);
+  const mo = momentOf(c);
+  const [y, m, d] = mo.date.split('-').map(Number);
+  const [hh, mm] = mo.time.split(':').map(Number);
   const jd = getJulianDay(y, m, d, hh, mm, c.tz);
   const p = calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean');
   const tree = calculateDashaTree(p.Moon, new Date(y, m - 1, d, hh, mm));
@@ -532,6 +589,13 @@ function renderProfile() {
     html += `<div class="dom"><b>${d.h} တန့် · ${d.name}</b> ${chip(a.grade)}<div class="small">အရှင် ${PLANET_MM[a.lord]} (အား ${a.st})${occ ? ' · ရပ်ဂြိုဟ်: ' + occ : ''}</div><div class="bar-wrap"><div class="bar-fill" style="width:${a.st}%"></div></div></div>`;
   });
   html += `</div></div>`;
+  html += `<div class="card"><h2>🔍 ကဏ္ဍ အလိုက် အသေး အဟော</h2>`;
+  DOMAINS.forEach(d => {
+    const a = assessDomain(p, d.h);
+    const g = a.grade === 'အားကောင်း' ? 'good' : a.grade === 'အလယ်အလတ်' ? 'mid' : 'bad';
+    html += `<p class="line"><b>${d.h} တန့် · ${d.name}</b> ${chip(a.grade)} — ${DOMAIN_DETAIL[d.h][g]}</p>`;
+  });
+  html += `</div>`;
   // yogas
   const yogas = [];
   const moonS = moonSign, jupRel = relHouse(signOf(p.Jupiter), moonS);
@@ -583,7 +647,7 @@ function renderTransit() {
 }
 const _cycCache = {};
 function cyclesNext12(c, p) {
-  const key = c.id + '|' + $('ayanSel').value;
+  const key = c.id + '|' + $('ayanSel').value + '|' + (ALT_SEL[c.id] == null ? -1 : ALT_SEL[c.id]);
   if (_cycCache[key]) return _cycCache[key];
   const ayan = $('ayanSel').value;
   const lagSign = signOf(p.Lagna);
@@ -632,27 +696,75 @@ function cyclesNext12(c, p) {
 }
 
 // ---------- Tab 3: Annual ----------
-function findIngressJD(year, c) {
+function findIngressJD(year, c, target, approxUtcMs) {
   const ayan = $('ayanSel').value;
   const sunLon = (jd) => calculateNASA_JPL_Planets(jd, c.lat, c.lon, ayan, 'mean').Sun;
-  // scan Apr 8..20 for the 360->0 crossing
-  let jd0 = Date.UTC(year, 3, 8) / 86400000 + 2440587.5;
-  let prev = sunLon(jd0), prevJd = jd0;
-  for (let d = 1; d <= 13; d++) {
-    const jd = jd0 + d;
-    const cur = sunLon(jd);
-    if (prev > 350 && cur < 10) {
-      let lo = prevJd, hi = jd;
-      for (let i = 0; i < 42; i++) {
-        const mid = (lo + hi) / 2;
-        const v = sunLon(mid);
-        if (v > 350) lo = mid; else hi = mid;
+  const dist = (jd) => { let d = (sunLon(jd) - (target || 0) + 540) % 360 - 180; return d; };
+  const t0 = (approxUtcMs || Date.UTC(year, 3, 14)) / 86400000 + 2440587.5;
+  let lo = t0 - 12, hi = t0 + 12, dLo = dist(lo);
+  // ensure bracket
+  let step = 0;
+  while (dLo > 0 && step < 20) { lo -= 6; dLo = dist(lo); step++; }
+  let dHi = dist(hi);
+  step = 0;
+  while (dHi < 0 && step < 20) { hi += 6; dHi = dist(hi); step++; }
+  for (let i = 0; i < 44; i++) { const mid = (lo + hi) / 2; if (dist(mid) < 0) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+function quarterCharts(year, c) {
+  const defs = [
+    { name: 'ပထမ သုံးလ', target: 0, approx: Date.UTC(year, 3, 14) },
+    { name: 'ဒုတိယ သုံးလ', target: 90, approx: Date.UTC(year, 5, 21) },
+    { name: 'တတိယ သုံးလ', target: 180, approx: Date.UTC(year, 8, 23) },
+    { name: 'စတုတ္ထ သုံးလ', target: 270, approx: Date.UTC(year, 11, 21) }
+  ];
+  return defs.map((q, i) => {
+    const jd = i === 0 ? findIngressJD(year, c) : findIngressJD(year, c, q.target, q.approx);
+    const nextJd = i < 3 ? null : findIngressJD(year + 1, c);
+    return { name: q.name, jd, nextJd, p: calculateNASA_JPL_Planets(jd, c.lat, c.lon, $('ayanSel').value, 'mean') };
+  });
+}
+function jdToDateStr(jd) { return new Date((jd - 2440587.5) * 86400000).toISOString().slice(0, 10); }
+const COMMODITIES = [
+  { name: '🌾 ဆန် / စပါး', karakas: ['Moon', 'Jupiter'], good: [2, 4, 11], bad: [8, 12] },
+  { name: '🫘 ပဲ အမျိုးမျိုး', karakas: ['Mercury'], good: [2, 3, 11], bad: [8, 12] },
+  { name: '🧵 အထည် / ချည်', karakas: ['Venus'], good: [2, 11], bad: [8, 12] },
+  { name: '⛽ လောင်စာ / စွမ်းအင်', karakas: ['Mars', 'Sun'], good: [2, 10, 11], bad: [8, 12] },
+  { name: '🥇 သတ္တု / ရွှေ', karakas: ['Saturn', 'Sun'], good: [2, 11], bad: [8, 12] },
+  { name: '🪵 သစ် / ရာဘာ', karakas: ['Saturn', 'Venus'], good: [2, 4, 11], bad: [8, 12] }
+];
+function eclipsesInYear(c, p, year) {
+  const ayan = $('ayanSel').value;
+  const lagSign = signOf(p.Lagna);
+  const out = [];
+  const dayMs = 86400000;
+  const start = Date.UTC(year, 0, 1);
+  const planetsAt = (ms) => calculateNASA_JPL_Planets(ms / dayMs + 2440587.5, c.lat, c.lon, ayan, 'mean');
+  const angDiff = (a, b) => { let d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; };
+  let prev = null;
+  for (let t = start; t < start + 368 * dayMs; t += 2 * dayMs) {
+    const q = planetsAt(t);
+    const elong = angDiff(q.Sun, q.Moon);
+    const nodeD = Math.min(angDiff(q.Moon, q.Rahu), angDiff(q.Moon, q.Ketu));
+    const score = Math.min(elong, Math.abs(180 - elong)) + nodeD * 0.3;
+    if (prev && prev.score > score && prev.score < 14) {
+      let best = prev;
+      for (let rt = prev.t - 2 * dayMs; rt <= prev.t + 2 * dayMs; rt += 3 * 3600000) {
+        const r = planetsAt(rt);
+        const e2 = angDiff(r.Sun, r.Moon);
+        const sc2 = Math.min(e2, Math.abs(180 - e2)) + Math.min(angDiff(r.Moon, r.Rahu), angDiff(r.Moon, r.Ketu)) * 0.3;
+        if (sc2 < best.score) best = { t: rt, score: sc2, q: r, elong: e2 };
       }
-      return (lo + hi) / 2;
+      const isSolar = best.elong < 90;
+      const h = relHouse(signOf(best.q.Moon), lagSign);
+      const dstr = new Date(best.t).toISOString().slice(0, 10);
+      if (dstr.startsWith(String(year)) && !out.some(e => Math.abs(new Date(e.date) - best.t) < 20 * dayMs)) {
+        out.push({ date: dstr, icon: isSolar ? '🌑' : '🌕', text: `${isSolar ? 'နေ ကြတ်' : 'လ ကြတ်'} — နိုင်ငံ လဂ် မှ ${h} တန့် (${DOMAINS[h - 1].name}) မှာ ကျတယ်` });
+      }
     }
-    prev = cur; prevJd = jd;
+    prev = { t, score, q };
   }
-  return jd0 + 6;
+  return out;
 }
 function renderAnnual() {
   const c = getCountry(state.country);
@@ -679,6 +791,56 @@ function renderAnnual() {
     html += `<p class="line"><b>${sec.name}</b> ${chip(gLabel)} — ${SECTOR_LINES[sec.key][g]}</p>`;
   });
   html += `<p class="small">ကဏ္ဍ အဆင့် သည် နှစ် ဇာတာ ရဲ့ သက်ဆိုင် တန့် အရှင် အား နဲ့ ရပ်ဂြိုဟ် တွေ အပေါ် အခြေခံ တဲ့ အကြမ်းဖျင်း ဖတ်ချက် ဖြစ်သည်။</p></div>`;
+  // quarters (သုံးလ တစ်ဖြတ်)
+  const quarters = quarterCharts(year, c);
+  html += `<div class="card"><h2>🗓️ သုံးလ တစ်ဖြတ် အခြေအနေ + ဘေး အချိန်ခွဲ</h2>`;
+  quarters.forEach((q, i) => {
+    const qp = q.p;
+    const qEnd = i < 3 ? quarters[i + 1].jd : q.nextJd;
+    const risks = [];
+    const inSign = (pl, signs) => signs.includes(signOf(qp[pl]));
+    const inHouse = (pl, hs) => hs.includes(_planetHouse(qp, pl));
+    if ((inSign('Mars', [1, 5, 9]) || inSign('Saturn', [1, 5, 9])) && (inHouse('Mars', [4, 8]) || inHouse('Saturn', [4, 8]))) risks.push('🏔️ မြေ/ငလျင် သတိ — မြေ ရာသီ ဂြိုဟ် ဆိုး တွေ ၄/၈ တန့် ကို ထိ ထား တယ်');
+    if ((inSign('Mars', [3, 7, 11]) || inSign('Saturn', [3, 7, 11]) || inSign('Rahu', [3, 7, 11])) && (inHouse('Mars', [4, 8]) || inHouse('Saturn', [4, 8]) || inHouse('Rahu', [4, 8]))) risks.push('🌊 ရေ/မုန်တိုင်း သတိ — ရေ ရာသီ ဖိအား ၄/၈ တန့် မှာ စု တယ် (ရာသီ ပြင် မုန်တိုင်း လည်း ဖြစ် နိုင်)');
+    let sectorChips = '';
+    SECTORS.forEach(sec => {
+      let sum = 0;
+      sec.houses.forEach(h => { const a = assessDomain(qp, h); sum += a.grade === 'အားကောင်း' ? 2 : a.grade === 'အလယ်အလတ်' ? 1 : 0; });
+      const avg = sum / sec.houses.length;
+      const g = avg >= 1.6 ? 'အားကောင်း' : avg >= 0.8 ? 'အလယ်အလတ်' : 'ဂရုစိုက်';
+      sectorChips += `<span class="chip ${g === 'အားကောင်း' ? 'g-good' : g === 'အလယ်အလတ်' ? 'g-mid' : 'g-bad'}" title="${sec.name}">${sec.name.split(' ')[0]} ${g}</span> `;
+    });
+    const lord10 = _lordOfHouse(qp, 10);
+    const st10 = _planetStrength(qp, lord10);
+    const h10 = _planetHouse(qp, lord10);
+    const gov = (typeof st10 === 'number' && st10 >= 58 && [1, 4, 5, 9, 10, 11].includes(h10)) ? 'တည်ငြိမ်' : (typeof st10 === 'number' && st10 < 45) || [6, 8, 12].includes(h10) ? 'လှုပ်ရှား နိုင်' : 'အလယ်အလတ်';
+    html += `<p class="line"><b>${q.name}</b> <span class="small">${jdToDateStr(q.jd)} → ${jdToDateStr(qEnd)}</span><br>${sectorChips}<br><span class="small">🏛️ အစိုးရ တည်ငြိမ်မှု: <b>${gov}</b> (၁၀ တန့် အရှင် ${PLANET_MM[lord10]} — အား ${typeof st10 === 'number' ? Math.round(st10) : '—'}, ${h10} တန့်)</span></p>`;
+    if (risks.length) risks.forEach(r => { html += `<p class="line">${r} — ဒီ သုံးလ အတွင်း ကြိုတင် ပြင်ဆင်/သတိပေး စနစ် အဆင် သင့် ထား သင့် တယ်။</p>`; });
+    else html += `<p class="line small">ဒီ သုံးလ အတွက် ဘေး အထူး အချက် မထင်ရှား။</p>`;
+  });
+  html += `</div>`;
+  // commodities
+  html += `<div class="card"><h2>📦 ကုန် အလိုက် ပို့/သွင်း အခြေအနေ (နှစ် ဇာတာ)</h2>`;
+  COMMODITIES.forEach(cm => {
+    let stSum = 0, n = 0, good = 0, bad = 0;
+    cm.karakas.forEach(k => {
+      const st = _planetStrength(ip, k); if (typeof st === 'number') { stSum += st; n++; }
+      const h = _planetHouse(ip, k);
+      if (cm.good.includes(h)) good++;
+      if (cm.bad.includes(h)) bad++;
+    });
+    const avg = n ? stSum / n : 50;
+    const g = avg >= 65 && good >= bad ? 'အားကောင်း' : avg < 45 || bad > good ? 'ဂရုစိုက်' : 'အလယ်အလတ်';
+    const lean = good > bad ? 'ပို့ကုန် ဘက် အားကောင်း' : bad > good ? 'သွင်းကုန်/ပြည်တွင်း ဈေး သတိ' : 'ပို့/သွင်း ညီ';
+    html += `<p class="line"><b>${cm.name}</b> ${chip(g)} — ${lean} (ကာရက အား ${Math.round(avg)})</p>`;
+  });
+  html += `<p class="small">ကုန် အဆင့် သည် နှစ် ဇာတာ မှာ သက်ဆိုင် ကာရက ဂြိုဟ် အား နဲ့ တည် နေရာ (ဝင်ငွေ တန့် ဆို ပို့ကုန် ကောင်း / ဆုံးရှုံး တန့် ဆို သတိ) အပေါ် အခြေခံ တဲ့ အကြမ်းဖျင်း ဖြစ်သည်။</p></div>`;
+  // year eclipses
+  const ecl = eclipsesInYear(c, chartOf(c).p, year);
+  html += `<div class="card"><h2>🌘 ${year} အတွင်း ကြတ် တွေ (နိုင်ငံ လဂ် အခြေခံ)</h2>`;
+  if (ecl.length) ecl.forEach(e => { html += `<p class="line">${e.icon} <b>${e.date}</b> — ${e.text}။ အဲ့ နယ်ပယ် မှာ အဲ့ ရက် ဝန်းကျင် သတိ/အပြောင်းအလဲ အချက် ရှိ နိုင် တယ်။</p>`; });
+  else html += `<p class="line">ဒီ နှစ် အတွက် ထင်ရှား တဲ့ ကြတ် မတွေ့ ပါ။</p>`;
+  html += `</div>`;
   // ingress planet table
   html += `<div class="card"><h2>🪐 နှစ် ဇာတာ ဂြိုဟ် တည်နေရာ</h2><table><tr><th>ဂြိုဟ်</th><th>ရာသီ</th><th>တန့်</th></tr>`;
   ['Lagna'].concat(PLANETS).forEach(pl => { html += `<tr><td>${PLANET_MM[pl]}</td><td>${SIGN_MM[signOf(ip[pl])]}</td><td>${pl === 'Lagna' ? 1 : _planetHouse(ip, pl)}</td></tr>`; });
@@ -709,7 +871,11 @@ function renderPriority() {
   }).sort((x, y) => y.sc - x.sc);
   let html = `<div class="card"><h2>🧭 ဦးစားပေး ရွေးချယ်မှု — ${c.name} (လက်ရှိ ကာလ)</h2>
     <p class="small">မွေးဇာတာ အခြေခံ အား + လက်ရှိ ဒဿာ ခေတ် + ကောဇာ သုံးလွှာ ချိန် ထားတဲ့ နယ်ပယ် အဆင့် ဖြစ်သည်။</p>
-    <h3>✅ ဦးစားပေး သင့်ဆုံး နယ်ပယ်</h3>`;
+    <h3>🏛️ ရေရှည် အခြေခံ (မွေးဇာတာ သက်သက် — မဟာဗျူဟာ အတွက်)</h3>`;
+  DOMAINS.map(d => ({ d, a: assessDomain(p, d.h) })).sort((x, y) => y.a.st - x.a.st).slice(0, 3).forEach((r, i) => {
+    html += `<p class="line"><b>${i + 1}. ${r.d.name}</b> ${chip(r.a.grade)} <span class="small">(အရှင် ${PLANET_MM[r.a.lord]} အား ${r.a.st})</span> — နိုင်ငံ့ မွေးရာ ပါ အားသာချက် မို့ ရေရှည် စီမံကိန်း (ဥပမာ ပညာရေး/နည်းပညာ စီမံကိန်း) ချ ရင် ဒီ နယ်ပယ် တွေ အခြေခံ ထား သင့် တယ်။</p>`;
+  });
+  html += `<h3>✅ ဦးစားပေး သင့်ဆုံး နယ်ပယ် (လက်ရှိ ကာလ)</h3>`;
   scored.slice(0, 3).forEach((r, i) => {
     html += `<p class="line"><b>${i + 1}. ${r.d.name}</b> <span class="chip g-info">အမှတ် ${r.sc}</span> — ${r.why.length ? r.why.join(' · ') : 'အခြေခံ အား ကောင်း'}။ ဒီ ကာလ မှာ ဒီ နယ်ပယ် ကို အားဖြည့် လုပ်ရင် အကျိုး အများ ဆုံး ရ မယ်။</p>`;
   });
@@ -743,7 +909,7 @@ function relateScore(a, b) {
   lines.push(`အခြေခံ အား နှိုင်း: ${a.name.split('·')[0].trim()} ${compA} · ${b.name.split('·')[0].trim()} ${compB} — ${compA === compB ? 'တန်း တူ' : (compA > compB ? a.name.split('·')[0].trim() : b.name.split('·')[0].trim()) + ' ဘက် အခြေခံ အသာ ရှိ'}။`);
   const eraA = currentEra(A.tree), eraB = currentEra(B.tree);
   if (eraA && eraB) lines.push(`ခေတ် အခြေအနေ: ${a.name.split('·')[0].trim()} ${PLANET_MM[eraA.maha]} ခေတ် · ${b.name.split('·')[0].trim()} ${PLANET_MM[eraB.maha]} ခေတ် — နှစ်ဖက် လုံး ရဲ့ ခေတ် အရှင် တွေ ကိုယ့် ဇာတာ မှာ ကောင်း တဲ့ တန့် ပိုင် ရင် ပူးပေါင်း ကာလ ကောင်း တယ်။`);
-  return { lines, coop, compA, compB };
+  return { lines, coop, compA, compB, A, B };
 }
 function renderRelate() {
   const a = getCountry(state.country);
@@ -754,25 +920,71 @@ function renderRelate() {
     <p class="line"><b>${verdict}</b></p>
     <p><label class="small">နှိုင်းမည့် နိုင်ငံ: </label><select id="countryB"></select></p>`;
   r.lines.forEach(l => { html += `<p class="line">• ${l}</p>`; });
+  // sector comparison
+  const SEC_CMP = [ { name: 'ကုန်သွယ်', houses: [7] }, { name: 'စီးပွား', houses: [2, 11] }, { name: 'ပညာ / ယဉ်ကျေးမှု', houses: [5, 9] }, { name: 'တည်ငြိမ်မှု / အုပ်ချုပ်ရေး', houses: [1, 10] }, { name: 'ကျန်းမာ စနစ်', houses: [6] } ];
+  html += `<h3>📊 ကဏ္ဍ အလိုက် အားသာချက် နှိုင်း</h3>`;
+  SEC_CMP.forEach(sc => {
+    const va = Math.round(sc.houses.reduce((t, h) => t + assessDomain(r.A.p, h).st, 0) / sc.houses.length);
+    const vb = Math.round(sc.houses.reduce((t, h) => t + assessDomain(r.B.p, h).st, 0) / sc.houses.length);
+    const who = Math.abs(va - vb) < 8 ? 'တန်း တူ နီးပါး' : (va > vb ? a.name.split('·')[0].trim() + ' သာ' : b.name.split('·')[0].trim() + ' သာ');
+    html += `<p class="line">• <b>${sc.name}</b>: ${a.name.split('·')[0].trim()} ${va} · ${b.name.split('·')[0].trim()} ${vb} — ${who}</p>`;
+  });
+  // best start years (both eras supportive)
+  const sup = (treeX, pX, ys) => { const lord = eraOf(treeX, ys); if (!lord) return false; return [2, 7, 9, 10, 11].some(h => _lordOfHouse(pX, h) === lord); };
+  const curY = new Date().getFullYear();
+  const goodYears = [];
+  for (let Y = curY; Y <= curY + 15; Y++) { if (sup(r.A.tree, r.A.p, Y + '-07-01') && sup(r.B.tree, r.B.p, Y + '-07-01')) goodYears.push(Y); }
+  const runs = [];
+  goodYears.forEach(Y => { const last = runs[runs.length - 1]; if (last && Y === last.end + 1) last.end = Y; else runs.push({ start: Y, end: Y }); });
+  html += `<h3>🗓️ ပေါင်းဖက် စတင် သင့်တဲ့ ကာလ (နှစ်ဖက် ခေတ် ထောက် မှု)</h3>`;
+  if (runs.length) runs.slice(0, 3).forEach(r => { html += `<p class="line">• <b>${r.start}${r.end > r.start ? '–' + r.end : ''}</b> မှာ စတင်/တိုး လုပ်ရင် နှစ်ဖက် လုံး ရဲ့ ဒဿာ ခေတ် က ဆက်ဆံရေး တန့် တွေ ကို ထောက် ထား လို့ ${r.end - r.start + 1} နှစ် ခန့် ဆက် ကောင်း နိုင် တယ်။</p>`; });
+  else html += `<p class="line">• လာမည့် ၁၅ နှစ် အတွင်း နှစ်ဖက် လုံး ခေတ် ထောက် တဲ့ ကာလ ထင်ထင်ရှားရှား မတွေ့ — ရေတို စီမံကိန်း နဲ့ ပဲ စ သင့် တယ်။</p>`;
+  html += `<p class="small">အမြဲတမ်း ဆက်ဆံရေး အခြေခံ က အပေါ်က နှိုင်းယှဉ်ချက်၊ အချိန်ပိုင်း စတင် မှု က ဒီ ကာလ စာရင်း — နှစ်ခု ခွဲ ကြည့် ရမယ်။</p>`;
   html += `<p class="small">ဒါ အကြမ်းဖျင်း နှိုင်းယှဉ်ချက် သာ ဖြစ်သည် — လက်တွေ့ ဆက်ဆံရေး သည် သမိုင်း/ပထဝီ/စီးပွား အချက် တွေ အပေါ် လည်း မူတည် သည်။</p></div>`;
   $('tab-relate').innerHTML = html;
   const sel = $('countryB');
-  allCountries().forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; if (c.id === state.countryB) o.selected = true; sel.appendChild(o); });
+  fillGroupedSelect(sel, state.countryB);
   sel.onchange = () => { state.countryB = sel.value; renderRelate(); };
 }
 
 // ---------- state & init ----------
 const state = { country: 'mm', countryB: 'th', year: new Date().getFullYear(), tab: 'profile' };
+function fillGroupedSelect(sel, selectedId) {
+  sel.innerHTML = '';
+  const order = ['sea', 'asia', 'mena', 'europe', 'namerica', 'samerica', 'oceania', 'custom'];
+  const byRegion = {};
+  allCountries().forEach(c => { const r = c.region || (c.id.startsWith('cu') ? 'custom' : 'asia'); (byRegion[r] = byRegion[r] || []).push(c); });
+  order.forEach(r => {
+    if (!byRegion[r] || !byRegion[r].length) return;
+    const g = document.createElement('optgroup'); g.label = REGION_LABELS[r] || r;
+    byRegion[r].forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; if (c.id === selectedId) o.selected = true; g.appendChild(o); });
+    sel.appendChild(g);
+  });
+}
 function fillCountrySelect() {
   const sel = $('countrySel');
-  sel.innerHTML = '';
-  allCountries().forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; if (c.id === state.country) o.selected = true; sel.appendChild(o); });
+  fillGroupedSelect(sel, state.country);
   const c = getCountry(state.country);
-  $('foundInfo').textContent = `${c.date} ${c.time} · ${c.city} · ${c.basis}`;
+  const mo = momentOf(c);
+  $('foundInfo').textContent = `${mo.date} ${mo.time} · ${c.city} · ${mo.label ? mo.label : c.basis}`;
+  const altRow = $('altRow');
+  if (altRow) {
+    altRow.innerHTML = '';
+    if (ALT_MOMENTS[c.id]) {
+      const mk = (label, idx) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.style.cursor = 'pointer'; if ((ALT_SEL[c.id] == null ? -1 : ALT_SEL[c.id]) === idx) b.classList.add('g-good'); b.onclick = () => { if (idx < 0) delete ALT_SEL[c.id]; else ALT_SEL[c.id] = idx; renderAll(); }; return b; };
+      altRow.appendChild(document.createTextNode(' တည်ချိန်: '));
+      altRow.appendChild(mk('အဓိက', -1));
+      ALT_MOMENTS[c.id].forEach((a, i) => altRow.appendChild(mk(a.label, i)));
+    }
+  }
 }
+let RENDERED = {};
+const RENDERERS = { profile: renderProfile, transit: renderTransit, annual: renderAnnual, priority: renderPriority, relate: renderRelate };
+function ensureTab(t) { if (!RENDERED[t] && RENDERERS[t]) { RENDERERS[t](); RENDERED[t] = 1; } }
 function renderAll() {
   fillCountrySelect();
-  renderProfile(); renderTransit(); renderAnnual(); renderPriority(); renderRelate();
+  RENDERED = {};
+  ensureTab(state.tab);
 }
 $('countrySel').onchange = () => { state.country = $('countrySel').value; if (state.countryB === state.country) state.countryB = state.country === 'mm' ? 'th' : 'mm'; renderAll(); };
 $('ayanSel').onchange = () => { renderAll(); };
@@ -782,6 +994,7 @@ document.querySelectorAll('#tabNav .tab').forEach(btn => {
     btn.classList.add('on');
     state.tab = btn.dataset.tab;
     ['profile', 'transit', 'annual', 'priority', 'relate'].forEach(t => { $('tab-' + t).style.display = t === state.tab ? '' : 'none'; });
+    ensureTab(state.tab);
     if (state.tab === 'annual' && !$('yearRow')) {
       const sec = $('tab-annual');
       const div = document.createElement('div');
@@ -799,11 +1012,9 @@ $('ncAdd').onclick = () => {
   const list = customCountries();
   const id = 'cu' + Date.now();
   list.push({ id, name, date, time, city: $('ncCity').value.trim() || '—', lat, lon, tz, basis: $('ncBasis').value.trim() || 'ကိုယ်တိုင် သတ်မှတ်' });
-  localStorage.setItem('medini_custom', JSON.stringify(list));
+  try { localStorage.setItem('medini_custom', JSON.stringify(list)); } catch (e) { /* storage unavailable in this viewer */ }
   state.country = id;
   renderAll();
 };
 renderAll();
-</script>
-</body>
-</html>
+if ($('bootStatus')) $('bootStatus').textContent = '✓ app အဆင် သင့် (v3) — နိုင်ငံ ' + allCountries().length + ' ခု ပါတယ်';
