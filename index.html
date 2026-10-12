@@ -38,9 +38,29 @@
   details summary { cursor: pointer; font-size: 12.5px; color: #4338ca; font-weight: 700; }
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; margin-top: 8px; }
   button.act { background: #4338ca; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-family: inherit; font-size: 12.5px; cursor: pointer; }
+  .overlay { position: fixed; inset: 0; background: rgba(15,13,45,.72); z-index: 100; align-items: center; justify-content: center; padding: 14px; }
+  .modal-card { background: #fff; border-radius: 16px; padding: 18px; max-width: 520px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(15,13,45,.35); }
+  .modal-card h2 { font-size: 15px; color: #1e1b4b; margin-bottom: 6px; }
+  .disc-list { margin: 8px 0 0 18px; font-size: 12.5px; color: #334155; }
+  .disc-list li { margin: 5px 0; }
+  .disc-btn { background: none; border: none; color: #4338ca; font-size: 11.5px; cursor: pointer; font-family: inherit; text-decoration: underline; padding: 0; }
 </style>
 </head>
 <body>
+<div id="consentModal" class="overlay" style="display:none">
+  <div class="modal-card">
+    <h2>သတိပြုရန် နှင့် အသုံးပြုမှု သဘောတူညီချက်</h2>
+    <p class="line">ဒီ App ကို မသုံး ခင် အောက် ပါ အချက် များ ကို နားလည် သဘောတူ ပေး ပါ —</p>
+    <ul class="disc-list">
+      <li>ဒီ App ဟာ ရှေး နက္ခတ် စည်းမျဉ်း များ အပေါ် အခြေခံ တဲ့ ဆင်ခြင် စဉ်းစား စရာ လမ်းညွှန် သာ ဖြစ် ပါတယ် — အနာဂတ် ကို အသေ သတ်မှတ် ထား တဲ့ ဟောကိန်း မဟုတ် ပါ။</li>
+      <li>ဘဝ ဆုံးဖြတ်ချက် များ ဟာ ကိုယ့် အသိ၊ အားထုတ်မှု နဲ့ ရွေးချယ်မှု အပေါ် မှာ ပဲ မူတည် ပါတယ် (Free Will)။</li>
+      <li>ဒီ တွက်ချက် မှု တွေ ဟာ ဆေး၊ ဥပဒေ၊ စိတ် ကျန်းမာရေး နဲ့ ငွေကြေး ကျွမ်းကျင် သူ များ ရဲ့ အကြံ ကို အစား မထိုး နိုင် ပါ။</li>
+      <li>"ဂရုစိုက်" အဆင့် များ ဟာ ကြောက် ဖို့ မဟုတ် — ကြိုတင် ပြင်ဆင် ပြီး အကောင်း ဆုံး စီမံ နိုင် အောင် ပါ။</li>
+    </ul>
+    <p class="small" style="margin-top:10px;font-style:italic">မှတ်ချက်: ဒီ App ဟာ အဟော ထုတ် ပေး တဲ့ ဆရာ တစ်ယောက် ရဲ့ စကား မဟုတ် ပါ — လေ့လာသူ တစ်ယောက် က အတူတူ ဝိုင်းဝန်း စဉ်းစား ဆွေးနွေး နိုင် အောင် စုစည်း ထား တဲ့ ကိရိယာ သာ ဖြစ် ပါတယ်။</p>
+    <p style="margin-top:14px;text-align:center"><button class="act" id="agreeBtn">နားလည် သဘောတူ ပါသည်</button></p>
+  </div>
+</div>
 <header>
   <h1>🏛️ Medini — နိုင်ငံ &amp; ကမ္ဘာ နက္ခတ်</h1>
   <p>နိုင်ငံ့ မွေးဇာတာ · လက်ရှိ ကောဇာ · တစ်နှစ် အဟော · ဦးစားပေး ရွေးချယ်မှု · နိုင်ငံ အချင်းချင်း ပေါင်းသင်း (Mundane Astrology)</p>
@@ -86,23 +106,17 @@
 <p class="foot">မွေးချိန် အခြေခံ များ ကို ပွင့်လင်းစွာ ပြထားပြီး ပြင်လို့ ရသည် — နိုင်ငံ မွေးချိန် သည် အငြင်းပွား ရသည့် အချက် ဖြစ်နိုင်သည်။ အဟော များသည် အကြမ်းဖျင်း ဖတ်နည်း သာ ဖြစ်သည်။</p>
 <div id="bootStatus" class="small" style="padding:4px 14px;color:#6d28d9">⏳ app ဖွင့် နေ တယ်… (ဒီ စာသား အကြာကြီး မပြောင်း ရင် ဒီ viewer မှာ script မ run လို့ ပါ — Safari မှာ ဖွင့် ပါ/သို့ GitHub တင် ဖွင့် ပါ)</div>
 <div id="bootErr" style="display:none;padding:6px 14px;color:#b91c1c;font-size:12px"></div>
+<p style="padding:2px 14px"><button id="discToggle" class="disc-btn">📜 ရှင်းလင်းချက် (Disclaimer)</button></p>
+<div id="disclaimerCard" class="card" style="display:none;margin:6px 14px 24px;max-width:932px">
+  <h2>ရှင်းလင်းချက် နှင့် တာဝန် ကန့်သတ်ချက် (Disclaimer)</h2>
+  <p class="line">၁။ စနစ် ၏ သဘောသဘာဝ: ဒီ App ဟာ မေဒိနီ (Medini) နက္ခတ် ရှေး တွက်ချက် ဖော်မြူလာ များ ကို အခြေခံ တဲ့ သတင်း ဆန်းစစ် ကိရိယာ တစ်ခု ပါ။ ပြသ တဲ့ ရလဒ် များ ဟာ ဖြစ်တန်စွမ်း နှင့် စရိုက် ဆင်ခြင် မှု အဆင့် သာ ဖြစ် ပြီး၊ အတိအကျ သတ်မှတ် ချက် မဟုတ် ပါ။</p>
+  <p class="line">၂။ တာဝန် ကန့်သတ်ချက်: ဒီ App မှ ရလဒ် များ အပေါ် အခြေခံ ၍ ကိုယ်တိုင် ဆုံးဖြတ် လုပ်ဆောင် မိ သော အကျိုး/အပြစ် များ အတွက် App ဖန်တီးသူ တွင် ဥပဒေ အရ ရော၊ ကံကြမ္မာ အရ ပါ တာဝန် မရှိ ပါ။</p>
+  <p class="line">၃။ စိတ် ကျန်းမာရေး: ရလဒ် များ ကို သတိတရား (Mindfulness) ဖြင့် သာ ချဉ်းကပ် ပါ။ စိတ်ဖိစီး မှု သို့မဟုတ် အစွဲ အလမ်း ဖြစ် လာ ပါ က သုံး တာ ရပ် ၍ ကျွမ်းကျင် သူ နှင့် တိုင်ပင် ပါ။</p>
+  <p class="line" style="font-style:italic">မှတ်ချက်: ဒီ App ဟာ အဟော ထုတ် ပေး တဲ့ ဆရာ တစ်ယောက် ရဲ့ စကား မဟုတ် ပါ — လေ့လာသူ တစ်ယောက် က အတူတူ ဝိုင်းဝန်း စဉ်းစား ဆွေးနွေး နိုင် အောင် စုစည်း ထား တဲ့ ကိရိယာ သာ ဖြစ် ပါတယ်။</p>
+</div>
 <script>
 window.addEventListener('error', function (e) { var d = document.getElementById('bootErr'); if (d) { d.style.display = 'block'; d.textContent = '⚠️ app error: ' + (e.message || 'unknown') + ' — screenshot ရိုက် ပို့ ပေး ပါ'; } });
 </script>
-<script>
-window.__log = [];
-function __ck(name, extra) {
-  window.__log.push(name);
-  var d = document.getElementById('probeLog');
-  if (d) d.innerHTML += '<div>✅ ' + name + (extra ? ' — ' + extra : '') + '</div>';
-}
-window.addEventListener('error', function (e) {
-  var d = document.getElementById('probeLog');
-  if (d) d.innerHTML += '<div style="color:#b91c1c">⚠️ ERROR: ' + (e.message || '?') + ' @line ' + (e.lineno || '?') + '</div>';
-});
-</script>
-<div id="probeLog" style="margin:10px 14px;padding:10px 12px;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;font-size:13px;line-height:1.9"><b>🔬 PROBE — script အဆင့် စစ် ဆေး ချက်</b></div>
-<script>__ck('script0 (log system) run');</script>
 <script>
 const NATURAL_RELATIONS = {
       Sun: { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn'], neutral: ['Mercury'] },
@@ -398,10 +412,6 @@ function _lordOfHouse(p, h) {
     }
 
 function _jdFromDate(d, tz){ return getJulianDay(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), (tz == null || isNaN(tz)) ? 6.5 : tz); }
-
-</script>
-<script>__ck("1/5 engine.js");</script>
-<script>
 // ================= Medini (Mundane) app =================
 const SIGN_MM = ['မိဿ', 'ပြိဿ', 'မေထုန်', 'ကရကဋ်', 'သိဟ်', 'ကန်', 'တူ', 'ဗြိစ္ဆာ', 'ဓနု', 'မကာရ', 'ကုံ', 'မိန်'];
 const PLANETS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
@@ -563,9 +573,6 @@ function assessDomain(p, h) {
   st = Math.max(3, Math.min(97, Math.round(st)));
   return { lord, st, grade: gradeOf(st) };
 }
-</script>
-<script>__ck("2/5 app1 first half");</script>
-<script>
 function currentEra(tree) {
   const nowStr = new Date().toISOString().slice(0, 10);
   for (const m of tree) {
@@ -716,10 +723,6 @@ function cyclesNext12(c, p) {
   return out;
 }
 
-</script>
-<script>__ck("3/5 app1 second half");</script>
-<script>
-
 // ---------- Tab 3: Annual ----------
 function findIngressJD(year, c, target, approxUtcMs) {
   const ayan = $('ayanSel').value;
@@ -827,14 +830,21 @@ function renderAnnual() {
     const inHouse = (pl, hs) => hs.includes(_planetHouse(qp, pl));
     if ((inSign('Mars', [1, 5, 9]) || inSign('Saturn', [1, 5, 9])) && (inHouse('Mars', [4, 8]) || inHouse('Saturn', [4, 8]))) risks.push('🏔️ မြေ/ငလျင် သတိ — မြေ ရာသီ ဂြိုဟ် ဆိုး တွေ ၄/၈ တန့် ကို ထိ ထား တယ်');
     if ((inSign('Mars', [3, 7, 11]) || inSign('Saturn', [3, 7, 11]) || inSign('Rahu', [3, 7, 11])) && (inHouse('Mars', [4, 8]) || inHouse('Saturn', [4, 8]) || inHouse('Rahu', [4, 8]))) risks.push('🌊 ရေ/မုန်တိုင်း သတိ — ရေ ရာသီ ဖိအား ၄/၈ တန့် မှာ စု တယ် (ရာသီ ပြင် မုန်တိုင်း လည်း ဖြစ် နိုင်)');
-    let sectorChips = '';
+    const okList = [], goodList = [], warnList = [];
+    const shortName = (n) => n.replace(/^\S+\s+/, '').split(' / ')[0];
     SECTORS.forEach(sec => {
       let sum = 0;
       sec.houses.forEach(h => { const a = assessDomain(qp, h); sum += a.grade === 'အားကောင်း' ? 2 : a.grade === 'အလယ်အလတ်' ? 1 : 0; });
       const avg = sum / sec.houses.length;
       const g = avg >= 1.6 ? 'အားကောင်း' : avg >= 0.8 ? 'အလယ်အလတ်' : 'ဂရုစိုက်';
-      sectorChips += `<span class="chip ${g === 'အားကောင်း' ? 'g-good' : g === 'အလယ်အလတ်' ? 'g-mid' : 'g-bad'}" title="${sec.name}">${sec.name.split(' ')[0]} ${g}</span> `;
+      if (g === 'ဂရုစိုက်') warnList.push(shortName(sec.name));
+      else if (g === 'အားကောင်း') goodList.push(shortName(sec.name));
+      else okList.push(shortName(sec.name));
     });
+    let sectorChips = '';
+    if (goodList.length) sectorChips += `<span class="small">✅ အားကောင်း: <b>${goodList.join(' · ')}</b></span><br>`;
+    if (okList.length) sectorChips += `<span class="small">• ပုံမှန်: ${okList.join(' · ')}</span><br>`;
+    if (warnList.length) sectorChips += `<span class="small" style="color:#b45309">⚠️ ဂရုစိုက်: <b>${warnList.join(' · ')}</b></span><br>`;
     const lord10 = _lordOfHouse(qp, 10);
     const st10 = _planetStrength(qp, lord10);
     const h10 = _planetHouse(qp, lord10);
@@ -912,9 +922,6 @@ function renderPriority() {
   $('tab-priority').innerHTML = html;
 }
 
-</script>
-<script>__ck("4/5 app2 first half");</script>
-<script>
 // ---------- Tab 5: Relate ----------
 function relateScore(a, b) {
   const A = chartOf(a), B = chartOf(b);
@@ -1046,9 +1053,21 @@ $('ncAdd').onclick = () => {
 };
 renderAll();
 if ($('bootStatus')) $('bootStatus').textContent = '✓ app အဆင် သင့် (v3) — နိုင်ငံ ' + allCountries().length + ' ခု ပါတယ်';
-
+// --- Disclaimer / consent (added; first-launch gate + footer About card) ---
+(function initConsent() {
+  var modal = $('consentModal');
+  var agreed = false;
+  try { agreed = localStorage.getItem('medini_agreed_v1') === '1'; } catch (e) { /* storage unavailable in this viewer */ }
+  if (modal && !agreed) modal.style.display = 'flex';
+  var btn = $('agreeBtn');
+  if (btn) btn.onclick = function () {
+    try { localStorage.setItem('medini_agreed_v1', '1'); } catch (e) { /* storage unavailable in this viewer */ }
+    if (modal) modal.style.display = 'none';
+  };
+  var tog = $('discToggle');
+  var card = $('disclaimerCard');
+  if (tog && card) tog.onclick = function () { card.style.display = card.style.display === 'none' ? '' : 'none'; };
+})();
 </script>
-<script>__ck("5/5 app2 second half");</script>
-<script>__ck("ALL BLOCKS DONE", document.querySelectorAll("#countrySel option").length + " countries in select");</script>
 </body>
 </html>
